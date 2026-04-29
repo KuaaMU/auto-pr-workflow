@@ -126,6 +126,44 @@ auto-pr-workflow/
 | Sweep | Agent | 任务执行 | 自动修复 |
 | **Auto-PR Workflow** | **Skill** | **深度分析** | **高质量 PR** |
 
+## 🚨 常见问题
+
+### 1. node --test 目录语法错误
+
+**问题**：`node --test test/` 尝试将目录作为模块加载
+
+**解决**：使用 glob 模式
+```bash
+node --test test/*.test.js
+```
+
+### 2. 测试进程挂起
+
+**问题**：测试通过但进程不退出（SQLite、WebSocket 等保持连接）
+
+**解决**：使用 --test-force-exit
+```bash
+node --test --test-force-exit test/*.test.js
+```
+
+### 3. CI 与现有 workflow 重复
+
+**问题**：auto-pr init 生成的 CI 与项目现有 CI 功能重叠
+
+**解决**：
+- 先检查 `.github/workflows/` 已有配置
+- 选择互补策略，而不是重复
+- 优先修复现有 CI 的遗漏
+
+### 4. CodeRabbit 反馈处理
+
+**问题**：CodeRabbit 提出代码风格或项目规范问题
+
+**解决**：
+- 读取 CLAUDE.md 了解项目规范
+- 根据反馈更新代码或配置
+- 保持与项目现有风格一致
+
 ## 📄 License
 
 MIT
