@@ -63,7 +63,7 @@ cmd_watch() {
             log_error "无法自动修复，请手动处理"
             echo ""
             echo "失败日志："
-            cat /tmp/ci-failure.log 2>/dev/null | head -50
+            head -50 /tmp/ci-failure.log 2>/dev/null
             return 1
         fi
     done

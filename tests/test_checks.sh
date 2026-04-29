@@ -32,6 +32,7 @@ assert_exit_code() {
 
 # 加载模块
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=src/checks.sh
 source "$SCRIPT_DIR/../src/checks.sh"
 
 # 测试用例
