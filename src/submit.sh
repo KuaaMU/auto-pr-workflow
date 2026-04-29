@@ -19,8 +19,6 @@ cmd_submit() {
     
     local project_type
     project_type=$(detect_project_type)
-    local branch
-    branch=$(git branch --show-current)
     
     # 1. 本地安全门禁
     log_info "运行本地检查..."
@@ -79,7 +77,7 @@ get_pr_body() {
     local changes
     changes=$(git diff main...HEAD --stat 2>/dev/null || echo "No changes")
     
-    cat << EOF
+    cat << BODYEOF
 ## Summary
 $(git log -1 --format=%s)
 
@@ -94,7 +92,7 @@ $changes
 
 ## Related Issues
 N/A
-EOF
+BODYEOF
 }
 
 # 手动触发 AI 审查

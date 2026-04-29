@@ -9,9 +9,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$SCRIPT_DIR/../src"
 
 # 加载模块
+# shellcheck source=src/checks.sh
 source "$SRC_DIR/checks.sh"
+# shellcheck source=src/submit.sh
 source "$SRC_DIR/submit.sh"
+# shellcheck source=src/watch.sh
 source "$SRC_DIR/watch.sh"
+# shellcheck source=src/fix.sh
 source "$SRC_DIR/fix.sh"
 
 # 颜色定义
@@ -123,7 +127,7 @@ cmd_init() {
 # 创建 Rust CI
 create_rust_ci() {
     if [ ! -f ".github/workflows/ci.yml" ]; then
-        cat > .github/workflows/ci.yml << 'EOF'
+        cat > .github/workflows/ci.yml << 'CIEOF'
 name: CI
 
 on:
@@ -157,7 +161,7 @@ jobs:
       
       - name: Tests
         run: cargo test
-EOF
+CIEOF
         log_success "创建 Rust CI workflow"
     fi
 }
@@ -165,7 +169,7 @@ EOF
 # 创建 Node.js CI
 create_node_ci() {
     if [ ! -f ".github/workflows/ci.yml" ]; then
-        cat > .github/workflows/ci.yml << 'EOF'
+        cat > .github/workflows/ci.yml << 'CIEOF'
 name: CI
 
 on:
@@ -199,7 +203,7 @@ jobs:
       
       - name: Build
         run: npm run build || true
-EOF
+CIEOF
         log_success "创建 Node.js CI workflow"
     fi
 }
@@ -207,7 +211,7 @@ EOF
 # 创建 Python CI
 create_python_ci() {
     if [ ! -f ".github/workflows/ci.yml" ]; then
-        cat > .github/workflows/ci.yml << 'EOF'
+        cat > .github/workflows/ci.yml << 'CIEOF'
 name: CI
 
 on:
@@ -237,7 +241,7 @@ jobs:
       
       - name: Test
         run: pytest || true
-EOF
+CIEOF
         log_success "创建 Python CI workflow"
     fi
 }
@@ -245,7 +249,7 @@ EOF
 # 创建 Go CI
 create_go_ci() {
     if [ ! -f ".github/workflows/ci.yml" ]; then
-        cat > .github/workflows/ci.yml << 'EOF'
+        cat > .github/workflows/ci.yml << 'CIEOF'
 name: CI
 
 on:
@@ -273,7 +277,7 @@ jobs:
       
       - name: Build
         run: go build ./...
-EOF
+CIEOF
         log_success "创建 Go CI workflow"
     fi
 }
@@ -282,7 +286,7 @@ EOF
 create_dependabot() {
     local ecosystem=$1
     if [ ! -f ".github/dependabot.yml" ]; then
-        cat > .github/dependabot.yml << EOF
+        cat > .github/dependabot.yml << DEPEOF
 version: 2
 updates:
   - package-ecosystem: "$ecosystem"
@@ -290,7 +294,7 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-EOF
+DEPEOF
         log_success "创建 Dependabot 配置"
     fi
 }
