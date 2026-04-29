@@ -150,3 +150,64 @@ cmd_merge() {
         exit 1
     fi
 }
+
+# 增量审查 - 只审查新变更
+cmd_review_incremental() {
+    log_info "增量审查..."
+    
+    local pr_number
+    pr_number=$(gh pr view --json number -q '.number' 2>/dev/null || echo "")
+    
+    if [ -z "$pr_number" ]; then
+        log_error "未找到当前 PR"
+        exit 1
+    fi
+    
+    # 获取上次审查的 commit
+    local last_reviewed
+    last_reviewed=$(gh pr view "$pr_number" --json commits -q '.[-1].oid' 2>/dev/null || echo "")
+    
+    if [ -z "$last_reviewed" ]; then
+        log_warn "无法获取上次审查 commit，执行完整审查"
+        cmd_review
+        return
+    fi
+    
+    # 获取新变更
+    local new_changes
+    new_changes=$(git diff "$last_reviewed"..HEAD --stat 2>/dev/null || echo "")
+    
+    if [ -z "$new_changes" ]; then
+        log_success "没有新变更，跳过审查"
+        return
+    fi
+    
+    log_info "新变更："
+    echo "$new_changes"
+    
+    # 触发审查
+    cmd_review
+}
+
+# 持久评论 - 更新同一条评论
+post_persistent_comment() {
+    local pr_number=$1
+    local content=$2
+    local marker="<!-- auto-pr-review -->"
+    
+    # 查找现有评论
+    local comment_id
+    comment_id=$(gh pr view "$pr_number" --comments --json comments -q \
+        '.[] | select(.body | contains("auto-pr-review")) | .id' 2>/dev/null || echo "")
+    
+    if [ -n "$comment_id" ]; then
+        # 更新现有评论
+        gh api "repos/$(get_owner_repo)/issues/comments/$comment_id" \
+            -X PATCH -f body="$marker
+$content" 2>/dev/null || true
+    else
+        # 创建新评论
+        gh pr comment "$pr_number" --body "$marker
+$content" 2>/dev/null || true
+    fi
+}
