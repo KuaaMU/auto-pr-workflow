@@ -1,129 +1,130 @@
 # Auto-PR Workflow 🔄
 
-全自动 PR 提交工作流 — 从代码变更到合并，最大限度减少人工干预。
+**教你的 Agent 自主提交高质量 PR 的能力。**
 
-## ✨ 特性
+不是固定脚本，而是 Agent 的思维方式。
 
-- **CLI-first** — 独立命令行工具，不依赖任何平台
-- **AI 双重审查** — Copilot + CodeRabbit 同时审查
-- **CI 自动监控** — 失败自动诊断、自动修复（最多3轮）
-- **Auto-Merge** — CI 全绿自动合并
-- **多语言支持** — Rust、Node.js、Python、Go
-- **Hermes 集成** — 可作为 Hermes Skill 使用
-- **测试记录系统** — 完整溯源、宣传案例、举例子
+## ✨ 核心理念
 
-## 🚀 安装
+```
+Skill 是大脑 — 教 Agent 分析、决策、判断
+CLI 是手脚 — 帮 Agent 检查、执行、提交
+```
+
+**其他工具**：CLI 为主体，Agent 调用 CLI → 固定流程 → 模板填充  
+**Auto-PR Workflow**：Skill 为主体，Agent 自主思考 → 调用 CLI → 高质量 PR
+
+## 🧠 Agent 工作流
+
+```
+Agent 深度分析项目（读代码、文档、CI、Issues）
+    │
+    ▼
+Agent 制定策略（什么 PR 有价值、什么会被拒绝）
+    │
+    ▼
+调用 Claude Code 执行代码工作
+    │
+    ▼
+CLI 辅助检查（语法、lint、测试）
+    │
+    ▼
+提交 PR + 监控 CI
+    │
+    ▼
+回应审查反馈 + 自动修复
+    │
+    ▼
+记录结果 + 学习改进
+```
+
+## 🚀 使用方式
+
+### 方式 1: 作为 Skill（推荐）
+
+让 Agent 学会这个能力：
 
 ```bash
-# npm 安装
-npm install -g auto-pr-workflow
-
-# 或直接克隆
-git clone https://github.com/KuaaMU/auto-pr-workflow.git
-echo 'export PATH="$HOME/auto-pr-workflow/cli/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+# Agent 自主执行完整工作流
+hermes delegate_task --goal "分析项目 X，提交一个有价值的 PR" \
+  --context "使用 auto-pr-workflow skill 的方法论"
 ```
 
-## 📖 使用
+### 方式 2: CLI 辅助工具
+
+Agent 可以用 CLI 做具体操作：
 
 ```bash
-# 初始化项目配置
-auto-pr init
-
-# 提交 PR
-auto-pr submit
-
-# 监控 CI 并自动修复
-auto-pr watch
-
-# 手动触发 AI 审查
-auto-pr review
-
-# 启用 auto-merge
-auto-pr merge
-
-# 自动生成 PR 描述
-auto-pr describe
+auto-pr check     # 本地检查（语法、lint）
+auto-pr submit    # 提交 PR
+auto-pr watch     # 监控 CI 状态
+auto-pr review    # 查看审查反馈
 ```
 
-## 🔄 工作流程
+**CLI 不做的事**：
+- ❌ 不决定提交什么（Agent 决定）
+- ❌ 不分析项目（Agent 分析）
+- ❌ 不生成内容（Agent 或 Claude Code 生成）
 
-```
-Agent 改代码
-    │
-    ▼
-本地安全门禁 ──── 失败 → 自动修复（最多3轮）
-    │ 通过
-    ▼
-创建分支 + Commit
-    │
-    ▼
-Push + 创建 PR
-    │  ├── @copilot（AI审查1）
-    │  └── @coderabbitai（AI审查2）
-    ▼
-CI 运行 ──── 失败 → 自动诊断+修复 → 再push（最多3轮）
-    │ 全绿
-    ▼
-Auto-Merge ──── CI+审查通过 → 自动合并
-    │
-    ▼
-清理分支
-```
+## 🔍 深度分析能力
+
+Agent 学会这个 Skill 后，应该能够：
+
+1. **分析项目架构** — 读 README、CONTRIBUTING、CLAUDE.md
+2. **理解贡献政策** — 什么 PR 会被接受、什么会被拒绝
+3. **找到真实痛点** — 不是模板填充，而是项目实际需要的
+4. **制定 PR 策略** — 基于分析结果选择最高价值方向
+
+### 高价值 PR 方向
+
+| 方向 | 价值 | 风险 |
+|------|------|------|
+| 修复真实 Bug | ⭐⭐⭐ | 低 |
+| 补充测试用例 | ⭐⭐⭐ | 低 |
+| 修复 CI 遗漏 | ⭐⭐⭐ | 低 |
+| 文档修正/完善 | ⭐⭐ | 极低 |
+| 安全漏洞修复 | ⭐⭐⭐⭐ | 低 |
+
+### 低价值方向（常被拒绝）
+
+| 方向 | 问题 |
+|------|------|
+| 通用模板填充 | 没有分析项目实际需求 |
+| 添加新功能 | 大多数项目需要先讨论 |
+| 引入新依赖 | 需要维护者同意 |
 
 ## 📁 项目结构
 
 ```
 auto-pr-workflow/
-├── cli/                    # CLI 工具
-│   ├── bin/auto-pr         # 可执行入口
-│   ├── src/                # 源码
-│   ├── tests/              # 测试
-│   ├── templates/          # 配置模板
-│   └── package.json
-├── skill/                  # Hermes Skill
-│   ├── SKILL.md            # 技能文档
-│   ├── scripts/            # 包装脚本
-│   └── templates/          # → cli/templates
-├── test-records/           # 测试记录
+├── skill/                  # 🧠 Agent 的大脑
+│   └── SKILL.md            # 工作流方法论
+├── cli/                    # 🤖 Agent 的手脚
+│   ├── bin/auto-pr         # CLI 入口
+│   ├── src/                # 检查、提交、监控
+│   └── templates/          # 配置模板
+├── test-records/           # 📝 测试记录
 │   ├── README.md           # 索引
-│   ├── template.md         # 记录模板
-│   └── YYYY-MM-DD_*.md     # 具体记录
+│   └── *.md                # 具体记录
 └── README.md
 ```
 
 ## 🏆 真实案例
 
-以下是使用 `auto-pr-workflow` 的真实测试记录，展示工具在不同项目上的能力：
-
-| 日期 | 项目 | 语言 | Stars | 测试类型 | 结果 | PR |
-|------|------|------|-------|----------|------|-----|
-| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | JavaScript | 249 | init + submit + watch + fix | ✅ | [PR#1](https://github.com/KuaaMU/clay/pull/1) |
+| 日期 | 项目 | Stars | 分析深度 | 结果 |
+|------|------|-------|---------|------|
+| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | 249 | ✅ 深度分析 | [PR#1](https://github.com/KuaaMU/clay/pull/1) |
 
 **详细记录**：[test-records/](./test-records/)
 
-### 案例价值
+## 🤖 与其他工具对比
 
-- **溯源索引**：每个 PR 都有完整的执行日志
-- **问题追踪**：记录遇到的问题和解决方案
-- **性能数据**：各阶段耗时统计
-- **宣传材料**：真实案例比文档更有说服力
-
-## 🤖 AI 审查额度
-
-| 工具 | 免费额度 | 省额度策略 |
-|------|----------|------------|
-| Copilot | 包含在订阅中 | 小PR不@，大PR才用 |
-| CodeRabbit | 公共仓库免费无限 | 公共仓库放心用 |
-
-## 🏆 竞品对比
-
-| 工具 | Stars | 我们的优势 |
-|------|-------|-----------|
-| Qodo Merge | 6.8k | CLI-first，Hermes 集成 |
-| CodeRabbit | 2.8k | 多 AI 整合 |
-| Sweep | 7.3k | 聚焦 PR 提交流程 |
-| reviewdog | 7.8k | 全流程自动化 |
+| 工具 | 主体 | 思考方式 | 结果 |
+|------|------|---------|------|
+| Qodo Merge | CLI | 固定流程 | 通用审查 |
+| CodeRabbit | 服务 | 模式匹配 | 代码建议 |
+| Sweep | Agent | 任务执行 | 自动修复 |
+| **Auto-PR Workflow** | **Skill** | **深度分析** | **高质量 PR** |
 
 ## 📄 License
 
