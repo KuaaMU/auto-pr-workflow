@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 2.1.0
+version: 2.2.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -39,16 +39,17 @@ cat LICENSE             # 开源协议
 # 2. 检查项目编码规范
 # 检查 .github/instructions/ 目录
 ls -la .github/instructions/ 2>/dev/null || true
-```
+
+# 3. 分析 CI/CD 现状
 ls .github/workflows/   # 现有 CI 配置
 cat .github/workflows/*.yml
 
-# 3. 检查质量基础设施
+# 4. 检查质量基础设施
 ls test/                # 测试现状
 cat package.json        # 依赖和脚本
 ls .github/             # 现有配置
 
-# 4. 了解项目历史
+# 5. 了解项目历史
 gh issue list --limit 10    # 开放的 Issues
 gh pr list --limit 10       # 最近的 PR
 git log --oneline -20       # 最近的提交
@@ -58,6 +59,12 @@ git log --oneline -20       # 最近的提交
 - 这个项目接受什么样的 PR？（有些项目拒绝 feature PR）
 - 维护者风格是什么？（solo-maintained vs 社区驱动）
 - 什么是真正的痛点？（不是你以为的，是项目实际缺的）
+
+**环境检查清单**：
+- [ ] GitHub CLI 已安装并登录
+- [ ] Git 已配置用户信息
+- [ ] Node.js/Python/Go 等语言环境就绪
+- [ ] 项目依赖已安装（npm ci / pip install）
 
 ### Phase 2: 制定策略（Agent 决策）
 
@@ -105,7 +112,16 @@ node --test test/      # 运行测试
 auto-pr submit         # 或手动 gh pr create
 ```
 
+**执行前检查清单**：
+- [ ] 代码符合项目风格（var/const、箭头函数、CommonJS/ESM）
+- [ ] Commit message 遵循项目规范（Angular Convention 等）
+- [ ] 没有引入新依赖（除非必要且已讨论）
+- [ ] 测试通过（本地运行）
+- [ ] 语法检查通过
+
 ### Phase 4: 监控与修复（Agent 循环）
+
+**CI 失败是常态，Agent 必须学会修复。**
 
 ```bash
 # 监控 CI
@@ -119,6 +135,36 @@ gh pr view <PR#> --json reviews
 # 根据 review 修改代码，再次提交
 ```
 
+#### CI 失败分类与处理
+
+| 失败类型 | 症状 | 处理方式 |
+|---------|------|---------|
+| 语法错误 | `SyntaxError`、`Unexpected token` | 修复语法，重新提交 |
+| 测试失败 | `FAIL`、`AssertionError` | 分析测试逻辑，修复代码 |
+| 依赖问题 | `MODULE_NOT_FOUND` | 检查 package.json，安装依赖 |
+| 超时 | `timeout`、进程挂起 | 检测挂起原因，添加 --force-exit |
+| 权限问题 | `Permission denied` | 检查文件权限，修复 |
+| 配置问题 | `Invalid workflow` | 修复 YAML 语法 |
+
+#### 修复循环策略
+
+1. **第一次失败**：分析日志，修复代码
+2. **第二次失败**：检查是否是环境问题（本地能过，CI 不能）
+3. **第三次失败**：考虑是否是项目特殊要求，查看其他 PR 如何处理
+4. **超过三次**：暂停，手动分析根本原因
+
+#### 审查反馈处理
+
+**Copilot 反馈**：
+- 通常是代码质量问题（命名、结构、安全性）
+- 优先修复安全相关建议
+- 代码风格问题参考项目规范
+
+**CodeRabbit 反馈**：
+- 通常是项目规范问题（编码风格、测试覆盖）
+- 读取 CLAUDE.md / .github/instructions/ 了解规范
+- 根据反馈更新代码
+
 ### Phase 5: 记录与学习
 
 ```bash
@@ -126,6 +172,13 @@ gh pr view <PR#> --json reviews
 cp test-records/template.md test-records/YYYY-MM-DD_project.md
 # 填写完整记录（分析、策略、执行、结果、学习）
 ```
+
+**记录要点**：
+- 分析过程（读了哪些文件、发现了什么）
+- 策略选择（为什么选这个方向）
+- 执行细节（代码改动、技术决策）
+- 问题与解决（遇到了什么、如何解决）
+- 关键学习（下次如何改进）
 
 ## CLI 工具（Agent 的手）
 
@@ -181,6 +234,26 @@ node --test --test-force-exit test/*.test.js
 - 根据反馈更新代码或配置
 - 保持与项目现有风格一致
 
+### 5. PR 被拒绝
+
+**问题**：维护者关闭 PR 或要求修改
+
+**解决**：
+- 仔细阅读拒绝理由
+- 如果是合理要求，修改后重新提交
+- 如果是项目方向问题，尊重维护者决定
+- 记录学习，下次避免类似问题
+
+### 6. 本地测试通过但 CI 失败
+
+**问题**：本地环境和 CI 环境不一致
+
+**解决**：
+- 检查 CI 使用的 Node.js/Python 版本
+- 检查是否缺少依赖安装步骤
+- 检查是否有时序或并发问题
+- 使用 `act` 等工具本地模拟 CI
+
 ## Agent 能力清单
 
 掌握这个 Skill 的 Agent 应该能够：
@@ -192,6 +265,8 @@ node --test --test-force-exit test/*.test.js
 - [ ] 回应 AI 审查反馈（Copilot、CodeRabbit）
 - [ ] 遵循项目编码风格和规范
 - [ ] 记录每次测试的结果和学习
+- [ ] 处理 PR 被拒绝的情况
+- [ ] 诊断本地/CI 环境差异
 
 ## 与 Hermes 集成
 

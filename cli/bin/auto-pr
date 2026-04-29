@@ -18,6 +18,87 @@ source "$SRC_DIR/submit.sh"
 source "$SRC_DIR/watch.sh"
 # shellcheck source=src/fix.sh
 source "$SRC_DIR/fix.sh"
+# ============================================================
+# 配置文件加载
+# ============================================================
+
+# 默认配置
+DEFAULT_CONFIG=(
+    "project.type=auto"
+    "project.style.use_var=false"
+    "project.style.use_arrow_functions=true"
+    "project.style.server_module=commonjs"
+    "project.style.client_module=esm"
+    "pr.base_branch=main"
+    "pr.commit_style=angular"
+    "pr.add_co_authored_by=false"
+    "ci.watch_interval=30"
+    "ci.max_fix_attempts=3"
+    "ci.auto_fix=true"
+    "ci.auto_merge=false"
+    "review.copilot=true"
+    "review.coderabbit=true"
+    "review.timeout=300"
+    "checks.syntax=true"
+    "checks.lint=true"
+    "checks.test=true"
+    "checks.typecheck=false"
+    "checks.build=false"
+    "logging.level=info"
+    "logging.save_to_file=false"
+)
+
+# 加载配置文件
+load_config() {
+    local config_file="${1:-.auto-pr.yml}"
+    
+    # 如果配置文件不存在，使用默认配置
+    if [ ! -f "$config_file" ]; then
+        log_info "使用默认配置"
+        return
+    fi
+    
+    log_info "加载配置文件: $config_file"
+    
+    # 读取配置文件
+    while IFS= read -r line; do
+        # 跳过注释和空行
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "$line" ]] && continue
+        
+        # 解析配置
+        if [[ "$line" =~ ^[[:space:]]*([a-zA-Z_]+):[[:space:]]*(.*)$ ]]; then
+            local key="${BASH_REMATCH[1]}"
+            local value="${BASH_REMATCH[2]}"
+            
+            # 移除引号
+            value="${value%\"}"
+            value="${value#\"}"
+            value="${value%\'}"
+            value="${value#\'}"
+            
+            # 设置配置
+            export "AUTO_PR_${key^^}=$value"
+        fi
+    done < "$config_file"
+}
+
+# 获取配置值
+get_config() {
+    local key="$1"
+    local default="$2"
+    
+    # 尝试从环境变量获取
+    local env_key="AUTO_PR_${key^^}"
+    local value="${!env_key}"
+    
+    # 如果环境变量不存在，使用默认值
+    if [ -z "$value" ]; then
+        value="$default"
+    fi
+    
+    echo "$value"
+}
 
 # 颜色定义
 RED='\033[0;31m'
@@ -338,12 +419,136 @@ DESCEOF
 # ============================================================
 # main - 主入口
 # ============================================================
+# ============================================================
+# check - 环境检查和依赖验证
+# ============================================================
+cmd_check() {
+    log_info "检查环境和依赖..."
+    
+    local errors=0
+    
+    # 1. 检查 Git
+    if ! command -v git &> /dev/null; then
+        log_error "Git 未安装"
+        ((errors++))
+    else
+        log_success "Git 已安装: $(git --version)"
+    fi
+    
+    # 2. 检查 GitHub CLI
+    if ! command -v gh &> /dev/null; then
+        log_error "GitHub CLI 未安装"
+        ((errors++))
+    else
+        log_success "GitHub CLI 已安装: $(gh --version | head -1)"
+        
+        # 检查登录状态
+        if ! gh auth status &> /dev/null; then
+            log_error "GitHub CLI 未登录"
+            ((errors++))
+        else
+            log_success "GitHub CLI 已登录"
+        fi
+    fi
+    
+    # 3. 检查 Git 配置
+    if [ -z "$(git config user.name)" ]; then
+        log_warn "Git 用户名未配置"
+    else
+        log_success "Git 用户名: $(git config user.name)"
+    fi
+    
+    if [ -z "$(git config user.email)" ]; then
+        log_warn "Git 邮箱未配置"
+    else
+        log_success "Git 邮箱: $(git config user.email)"
+    fi
+    
+    # 4. 检查项目类型和依赖
+    local project_type
+    project_type=$(detect_project_type)
+    
+    case $project_type in
+        rust)
+            if ! command -v cargo &> /dev/null; then
+                log_error "Rust/Cargo 未安装"
+                ((errors++))
+            else
+                log_success "Rust/Cargo 已安装"
+            fi
+            ;;
+        node)
+            if ! command -v node &> /dev/null; then
+                log_error "Node.js 未安装"
+                ((errors++))
+            else
+                log_success "Node.js 已安装: $(node --version)"
+            fi
+            
+            if ! command -v npm &> /dev/null; then
+                log_error "npm 未安装"
+                ((errors++))
+            else
+                log_success "npm 已安装: $(npm --version)"
+            fi
+            
+            # 检查依赖是否安装
+            if [ -f "package.json" ] && [ ! -d "node_modules" ]; then
+                log_warn "node_modules 不存在"
+                if [ -f "package-lock.json" ]; then
+                    log_info "运行 npm ci..."
+                    npm ci
+                else
+                    log_info "运行 npm install..."
+                    npm install
+                fi
+            fi
+            ;;
+        python)
+            if ! command -v python3 &> /dev/null; then
+                log_error "Python3 未安装"
+                ((errors++))
+            else
+                log_success "Python3 已安装: $(python3 --version)"
+            fi
+            ;;
+        go)
+            if ! command -v go &> /dev/null; then
+                log_error "Go 未安装"
+                ((errors++))
+            else
+                log_success "Go 已安装: $(go version)"
+            fi
+            ;;
+    esac
+    
+    # 5. 检查 CI 配置
+    if [ -d ".github/workflows" ]; then
+        log_success "CI 配置存在"
+        ls -la .github/workflows/
+    else
+        log_warn "没有 CI 配置"
+    fi
+    
+    # 总结
+    if [ $errors -eq 0 ]; then
+        log_success "环境检查通过！"
+    else
+        log_error "发现 $errors 个问题，请修复后重试"
+        exit 1
+    fi
+}
 main() {
     local command=${1:-help}
+    # 加载配置文件
+    load_config
     
     case $command in
         init)
             cmd_init
+            ;;
+        check)
+            cmd_check
             ;;
         submit)
             cmd_submit
@@ -362,6 +567,7 @@ main() {
             ;;
         help|--help|-h)
             echo "用法: auto-pr <command> [options]"
+            echo "  check      检查环境和依赖"
             echo ""
             echo "命令:"
             echo "  init       初始化项目配置"
