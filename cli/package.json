@@ -1,0 +1,19 @@
+{
+  "name": "auto-pr-workflow",
+  "version": "1.0.0",
+  "description": "全自动 PR 提交工作流 — 从代码变更到合并，最大限度减少人工干预",
+  "bin": {
+    "auto-pr": "./bin/auto-pr"
+  },
+  "scripts": {
+    "test": "bash tests/test_init.sh && bash tests/test_checks.sh",
+    "lint": "shellcheck bin/auto-pr src/*.sh tests/*.sh"
+  },
+  "keywords": ["github", "pr", "automation", "ci", "ai", "copilot", "coderabbit"],
+  "author": "KuaaMU",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KuaaMU/auto-pr-workflow.git"
+  }
+}

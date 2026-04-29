@@ -1,0 +1,1 @@
+../../cli/templates/pr-template.md
