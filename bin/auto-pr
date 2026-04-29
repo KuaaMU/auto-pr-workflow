@@ -1,0 +1,343 @@
+#!/bin/bash
+# auto-pr - 全自动 PR 提交工具
+# 用法: auto-pr <command> [options]
+
+set -euo pipefail
+
+# 获取脚本所在目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="$SCRIPT_DIR/../src"
+
+# 加载模块
+source "$SRC_DIR/checks.sh"
+source "$SRC_DIR/submit.sh"
+source "$SRC_DIR/watch.sh"
+source "$SRC_DIR/fix.sh"
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# 日志函数
+log_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+log_success() { echo -e "${GREEN}✅ $1${NC}"; }
+log_warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+log_error() { echo -e "${RED}❌ $1${NC}"; }
+
+# 检测项目类型
+detect_project_type() {
+    if [ -f "Cargo.toml" ]; then
+        echo "rust"
+    elif [ -f "package.json" ]; then
+        echo "node"
+    elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+        echo "python"
+    elif [ -f "go.mod" ]; then
+        echo "go"
+    else
+        echo "unknown"
+    fi
+}
+
+# 获取 owner/repo
+get_owner_repo() {
+    local remote_url
+    remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+    if [ -z "$remote_url" ]; then
+        log_error "未找到 git remote"
+        exit 1
+    fi
+    echo "$remote_url" | sed -E 's|.*github\.com[:/]||; s|\.git$||'
+}
+
+# ============================================================
+# init - 初始化项目配置
+# ============================================================
+cmd_init() {
+    log_info "初始化项目配置..."
+    
+    local project_type
+    project_type=$(detect_project_type)
+    log_info "检测到项目类型: $project_type"
+    
+    # 创建 .github 目录
+    mkdir -p .github/workflows
+    mkdir -p .github/instructions
+    
+    # 1. PR 模板
+    if [ ! -f ".github/pull_request_template.md" ]; then
+        cp "$SCRIPT_DIR/../templates/pr-template.md" .github/pull_request_template.md
+        log_success "创建 PR 模板"
+    else
+        log_warn "PR 模板已存在，跳过"
+    fi
+    
+    # 2. Copilot 自定义指令
+    if [ ! -f ".github/copilot-instructions.md" ]; then
+        cp "$SCRIPT_DIR/../templates/copilot-instructions.md" .github/copilot-instructions.md
+        log_success "创建 Copilot 自定义指令"
+    else
+        log_warn "Copilot 指令已存在，跳过"
+    fi
+    
+    # 3. CodeRabbit 配置
+    if [ ! -f ".coderabbit.yaml" ]; then
+        cp "$SCRIPT_DIR/../templates/coderabbit.yaml" .coderabbit.yaml
+        log_success "创建 CodeRabbit 配置"
+    else
+        log_warn "CodeRabbit 配置已存在，跳过"
+    fi
+    
+    # 4. 根据项目类型创建 CI
+    case $project_type in
+        rust)
+            create_rust_ci
+            create_dependabot "cargo"
+            ;;
+        node)
+            create_node_ci
+            create_dependabot "npm"
+            ;;
+        python)
+            create_python_ci
+            create_dependabot "pip"
+            ;;
+        go)
+            create_go_ci
+            create_dependabot "gomod"
+            ;;
+        *)
+            log_warn "未知项目类型，跳过 CI 配置"
+            ;;
+    esac
+    
+    log_success "初始化完成！"
+    echo ""
+    echo "已创建的文件："
+    ls -la .github/ .coderabbit.yaml 2>/dev/null || true
+}
+
+# 创建 Rust CI
+create_rust_ci() {
+    if [ ! -f ".github/workflows/ci.yml" ]; then
+        cat > .github/workflows/ci.yml << 'EOF'
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+      
+      - name: Check formatting
+        run: cargo fmt --check
+      
+      - name: Clippy
+        run: cargo clippy -- -D warnings
+      
+      - name: Tests
+        run: cargo test
+EOF
+        log_success "创建 Rust CI workflow"
+    fi
+}
+
+# 创建 Node.js CI
+create_node_ci() {
+    if [ ! -f ".github/workflows/ci.yml" ]; then
+        cat > .github/workflows/ci.yml << 'EOF'
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Type check
+        run: npm run typecheck || true
+      
+      - name: Test
+        run: npm test
+      
+      - name: Build
+        run: npm run build || true
+EOF
+        log_success "创建 Node.js CI workflow"
+    fi
+}
+
+# 创建 Python CI
+create_python_ci() {
+    if [ ! -f ".github/workflows/ci.yml" ]; then
+        cat > .github/workflows/ci.yml << 'EOF'
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install ruff pytest
+          pip install -r requirements.txt || true
+      
+      - name: Lint
+        run: ruff check .
+      
+      - name: Test
+        run: pytest || true
+EOF
+        log_success "创建 Python CI workflow"
+    fi
+}
+
+# 创建 Go CI
+create_go_ci() {
+    if [ ! -f ".github/workflows/ci.yml" ]; then
+        cat > .github/workflows/ci.yml << 'EOF'
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+      
+      - name: Test
+        run: go test ./...
+      
+      - name: Build
+        run: go build ./...
+EOF
+        log_success "创建 Go CI workflow"
+    fi
+}
+
+# 创建 Dependabot 配置
+create_dependabot() {
+    local ecosystem=$1
+    if [ ! -f ".github/dependabot.yml" ]; then
+        cat > .github/dependabot.yml << EOF
+version: 2
+updates:
+  - package-ecosystem: "$ecosystem"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+EOF
+        log_success "创建 Dependabot 配置"
+    fi
+}
+
+# ============================================================
+# main - 主入口
+# ============================================================
+main() {
+    local command=${1:-help}
+    
+    case $command in
+        init)
+            cmd_init
+            ;;
+        submit)
+            cmd_submit
+            ;;
+        watch)
+            cmd_watch
+            ;;
+        review)
+            cmd_review
+            ;;
+        merge)
+            cmd_merge
+            ;;
+        help|--help|-h)
+            echo "用法: auto-pr <command> [options]"
+            echo ""
+            echo "命令:"
+            echo "  init     初始化项目配置"
+            echo "  submit   提交 PR（本地检查 → 创建 PR → 触发审查）"
+            echo "  watch    监控 CI 并自动修复"
+            echo "  review   手动触发 AI 审查"
+            echo "  merge    启用 auto-merge"
+            echo ""
+            echo "示例:"
+            echo "  auto-pr init      # 初始化项目"
+            echo "  auto-pr submit    # 提交 PR"
+            echo "  auto-pr watch     # 监控 CI"
+            ;;
+        *)
+            log_error "未知命令: $command"
+            echo "运行 'auto-pr --help' 查看帮助"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
