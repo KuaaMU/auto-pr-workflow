@@ -10,6 +10,7 @@
 - **Auto-Merge** — CI 全绿自动合并
 - **多语言支持** — Rust、Node.js、Python、Go
 - **Hermes 集成** — 可作为 Hermes Skill 使用
+- **测试记录系统** — 完整溯源、宣传案例、举例子
 
 ## 🚀 安装
 
@@ -84,8 +85,29 @@ auto-pr-workflow/
 │   ├── SKILL.md            # 技能文档
 │   ├── scripts/            # 包装脚本
 │   └── templates/          # → cli/templates
+├── test-records/           # 测试记录
+│   ├── README.md           # 索引
+│   ├── template.md         # 记录模板
+│   └── YYYY-MM-DD_*.md     # 具体记录
 └── README.md
 ```
+
+## 🏆 真实案例
+
+以下是使用 `auto-pr-workflow` 的真实测试记录，展示工具在不同项目上的能力：
+
+| 日期 | 项目 | 语言 | Stars | 测试类型 | 结果 | PR |
+|------|------|------|-------|----------|------|-----|
+| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | JavaScript | 249 | init + submit + watch + fix | ✅ | [PR#1](https://github.com/KuaaMU/clay/pull/1) |
+
+**详细记录**：[test-records/](./test-records/)
+
+### 案例价值
+
+- **溯源索引**：每个 PR 都有完整的执行日志
+- **问题追踪**：记录遇到的问题和解决方案
+- **性能数据**：各阶段耗时统计
+- **宣传材料**：真实案例比文档更有说服力
 
 ## 🤖 AI 审查额度
 
