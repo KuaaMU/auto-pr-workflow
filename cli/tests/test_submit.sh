@@ -47,8 +47,7 @@ test_get_commit_title() {
     git commit -q --allow-empty -m "feat: test commit"
     
     set +e
-    local title
-    title=$(get_commit_title)
+    get_commit_title > /dev/null 2>&1
     local exit_code=$?
     set -e
     
@@ -71,8 +70,7 @@ test_get_pr_body() {
     git commit -q -m "feat: add test file"
     
     set +e
-    local body
-    body=$(get_pr_body)
+    get_pr_body > /dev/null 2>&1
     local exit_code=$?
     set -e
     
