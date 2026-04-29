@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup
+        run: |
+          chmod +x bin/auto-pr
+          chmod +x tests/*.sh
+      
+      - name: Check bash syntax
+        run: |
+          for f in bin/* src/*.sh tests/*.sh; do
+            bash -n "$f"
+          done
+      
+      - name: Run tests
+        run: |
+          ./tests/test_init.sh ./bin/auto-pr
+  
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+      
+      - name: Run shellcheck
+        run: |
+          find . -name "*.sh" -exec shellcheck {} \;
+          shellcheck bin/auto-pr
