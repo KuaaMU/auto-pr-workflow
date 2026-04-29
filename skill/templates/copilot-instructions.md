@@ -1,0 +1,1 @@
+../../cli/templates/copilot-instructions.md

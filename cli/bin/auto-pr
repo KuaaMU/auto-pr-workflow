@@ -7,6 +7,7 @@ set -euo pipefail
 # 获取脚本所在目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$SCRIPT_DIR/../src"
+TEMPLATE_DIR="$SCRIPT_DIR/../templates"
 
 # 加载模块
 # shellcheck source=src/checks.sh
@@ -73,7 +74,7 @@ cmd_init() {
     
     # 1. PR 模板
     if [ ! -f ".github/pull_request_template.md" ]; then
-        cp "$SCRIPT_DIR/../templates/pr-template.md" .github/pull_request_template.md
+        cp "$TEMPLATE_DIR/pr-template.md" .github/pull_request_template.md
         log_success "创建 PR 模板"
     else
         log_warn "PR 模板已存在，跳过"
@@ -81,7 +82,7 @@ cmd_init() {
     
     # 2. Copilot 自定义指令
     if [ ! -f ".github/copilot-instructions.md" ]; then
-        cp "$SCRIPT_DIR/../templates/copilot-instructions.md" .github/copilot-instructions.md
+        cp "$TEMPLATE_DIR/copilot-instructions.md" .github/copilot-instructions.md
         log_success "创建 Copilot 自定义指令"
     else
         log_warn "Copilot 指令已存在，跳过"
@@ -89,7 +90,7 @@ cmd_init() {
     
     # 3. CodeRabbit 配置
     if [ ! -f ".coderabbit.yaml" ]; then
-        cp "$SCRIPT_DIR/../templates/coderabbit.yaml" .coderabbit.yaml
+        cp "$TEMPLATE_DIR/coderabbit.yaml" .coderabbit.yaml
         log_success "创建 CodeRabbit 配置"
     else
         log_warn "CodeRabbit 配置已存在，跳过"
@@ -300,6 +301,41 @@ DEPEOF
 }
 
 # ============================================================
+# describe - 自动生成 PR 描述
+# ============================================================
+cmd_describe() {
+    log_info "生成 PR 描述..."
+    
+    local changes
+    changes=$(git diff main...HEAD --stat 2>/dev/null || echo "No changes")
+    
+    local commit_log
+    commit_log=$(git log main..HEAD --oneline 2>/dev/null || echo "No commits")
+    
+    cat << DESCEOF
+## Summary
+$(git log -1 --format=%s)
+
+## Changes
+\`\`\`
+$changes
+\`\`\`
+
+## Commits
+\`\`\`
+$commit_log
+\`\`\`
+
+## Test Plan
+- [ ] CI passes
+- [ ] Code review completed
+
+## Related Issues
+N/A
+DESCEOF
+}
+
+# ============================================================
 # main - 主入口
 # ============================================================
 main() {
@@ -321,15 +357,19 @@ main() {
         merge)
             cmd_merge
             ;;
+        describe)
+            cmd_describe
+            ;;
         help|--help|-h)
             echo "用法: auto-pr <command> [options]"
             echo ""
             echo "命令:"
-            echo "  init     初始化项目配置"
-            echo "  submit   提交 PR（本地检查 → 创建 PR → 触发审查）"
-            echo "  watch    监控 CI 并自动修复"
-            echo "  review   手动触发 AI 审查"
-            echo "  merge    启用 auto-merge"
+            echo "  init       初始化项目配置"
+            echo "  submit     提交 PR（本地检查 → 创建 PR → 触发审查）"
+            echo "  watch      监控 CI 并自动修复"
+            echo "  review     手动触发 AI 审查"
+            echo "  merge      启用 auto-merge"
+            echo "  describe   自动生成 PR 描述"
             echo ""
             echo "示例:"
             echo "  auto-pr init      # 初始化项目"
