@@ -139,16 +139,43 @@ run_bash_checks() {
         fi
     fi
     
-    # 语法检查
+    # 语法检查 - 检查所有 .sh 文件
     log_info "检查 bash 语法..."
-    for script in bin/* src/*.sh; do
-        if [ -f "$script" ]; then
+    local has_error=0
+    
+    # 检查 bin 目录
+    for script in bin/*; do
+        if [ -f "$script" ] && [ -x "$script" ]; then
             if ! bash -n "$script" 2>/dev/null; then
                 log_error "$script 语法错误"
-                return 1
+                has_error=1
             fi
         fi
     done
+    
+    # 检查 src 目录
+    for script in src/*.sh; do
+        if [ -f "$script" ]; then
+            if ! bash -n "$script" 2>/dev/null; then
+                log_error "$script 语法错误"
+                has_error=1
+            fi
+        fi
+    done
+    
+    # 检查 tests 目录
+    for script in tests/*.sh; do
+        if [ -f "$script" ]; then
+            if ! bash -n "$script" 2>/dev/null; then
+                log_error "$script 语法错误"
+                has_error=1
+            fi
+        fi
+    done
+    
+    if [ $has_error -eq 1 ]; then
+        return 1
+    fi
     
     return 0
 }
