@@ -20,7 +20,7 @@ YYYY-MM-DD_project-name.md
 
 | Date | Project | Language | Stars | Test Type | Result | PR |
 |------|---------|----------|-------|-----------|--------|-----|
-| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | JavaScript | 249 | init + submit + watch + fix | ✅ All pass | [PR#1](https://github.com/KuaaMU/clay/pull/1) |
+| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | JavaScript | 249 | Agent 自主分析 + PR | ✅ | [PR#351](https://github.com/chadbyte/clay/pull/351) |
 
 ## How to Use
 

@@ -113,7 +113,7 @@ auto-pr-workflow/
 
 | 日期 | 项目 | Stars | 分析深度 | 结果 |
 |------|------|-------|---------|------|
-| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | 249 | ✅ 深度分析 | [PR#1](https://github.com/KuaaMU/clay/pull/1) |
+| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | 249 | ✅ Agent 自主分析 | [PR#351](https://github.com/chadbyte/clay/pull/351) |
 
 **详细记录**：[test-records/](./test-records/)
 
