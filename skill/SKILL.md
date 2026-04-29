@@ -33,11 +33,13 @@ CLI 是手脚（执行、检查、提交）
 # 1. 读取项目核心文件
 cat README.md           # 项目定位、技术栈
 cat CONTRIBUTING.md     # 贡献政策（最关键！）
-cat CLAUDE.md           # AI 编码规范
 cat .github/CODEOWNERS  # 维护者
 cat LICENSE             # 开源协议
 
-# 2. 分析 CI/CD 现状
+# 2. 检查项目编码规范
+# 检查 .github/instructions/ 目录
+ls -la .github/instructions/ 2>/dev/null || true
+```
 ls .github/workflows/   # 现有 CI 配置
 cat .github/workflows/*.yml
 
@@ -175,7 +177,7 @@ node --test --test-force-exit test/*.test.js
 **问题**：CodeRabbit 提出代码风格或项目规范问题
 
 **解决**：
-- 读取 CLAUDE.md 了解项目规范
+- 检查项目编码规范文件（如 .github/instructions/）
 - 根据反馈更新代码或配置
 - 保持与项目现有风格一致
 

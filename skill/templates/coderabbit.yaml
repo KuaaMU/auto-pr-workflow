@@ -1,1 +1,36 @@
-../../cli/templates/coderabbit.yaml
+# CodeRabbit 配置模板
+# 文件位置: .coderabbit.yaml
+
+reviews:
+  # 自动审查状态
+  review_status: true
+  
+  # 自动审查配置
+  auto_review:
+    enabled: true
+    drafts: false
+  
+  # 路径特定指令
+  path_instructions:
+    - path: "src/**/*.rs"
+      instructions: |
+        Focus on Rust idioms and error handling
+        Avoid unwrap() in production code
+        Check for memory safety issues
+    
+    - path: "tests/**"
+      instructions: |
+        Check test coverage and edge cases
+        Ensure tests are readable and maintainable
+    
+    - path: "*.md"
+      instructions: |
+        Check for typos and grammar
+        Ensure code examples are correct
+
+  # 忽略的文件
+  ignore_paths:
+    - "node_modules/**"
+    - "target/**"
+    - ".git/**"
+    - "*.lock"

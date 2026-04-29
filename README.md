@@ -38,6 +38,34 @@ CLI 辅助检查（语法、lint、测试）
 记录结果 + 学习改进
 ```
 
+## 📦 安装
+
+### 方式 1: 安装 Skill（推荐）
+
+让 Agent 学会这个能力：
+
+```bash
+# 安装 skill
+hermes skills install https://raw.githubusercontent.com/KuaaMU/auto-pr-workflow/main/skills/auto-pr-workflow/SKILL.md -y
+
+# 验证安装
+hermes skills list | grep auto-pr-workflow
+```
+
+### 方式 2: 安装 CLI 工具
+
+```bash
+# 克隆项目
+git clone https://github.com/KuaaMU/auto-pr-workflow.git
+cd auto-pr-workflow
+
+# 安装 CLI
+npm install -g .
+
+# 或直接使用
+./cli/bin/auto-pr --help
+```
+
 ## 🚀 使用方式
 
 ### 方式 1: 作为 Skill（推荐）
