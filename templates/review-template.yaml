@@ -1,0 +1,57 @@
+# PR Review Template
+# Use this template to record structured analysis of each PR attempt.
+# Copy and fill in for each PR.
+
+project:
+  repo: ""              # owner/repo
+  url: ""               # https://github.com/owner/repo
+  stars: 0              # Star count at time of submission
+  language: ""          # Primary language
+  ci: true              # Does the project have CI?
+  maintainer_type: ""   # solo | team | org
+
+pr_info:
+  number: 0             # PR number
+  url: ""               # Full PR URL
+  type: ""              # bug-fix | ci-modernization | tooling-fix | docs | test | refactor | security
+  files_changed: 0      # Number of files changed
+  lines_added: 0        # Lines added
+  lines_removed: 0      # Lines removed
+
+timeline:
+  started: ""           # ISO 8601 — when analysis began
+  submitted: ""         # ISO 8601 — when PR was created
+  first_response: ""    # ISO 8601 — first maintainer/bot response (null if none)
+  resolved: ""          # ISO 8601 — merged/closed/rejected (null if still open)
+
+status: ""              # open | merged | closed | rejected | stalled
+
+maintainer_friendly_score: 0  # 1-5
+  # 1 = Hostile to AI/external contributions
+  # 2 = No response, unclear receptiveness
+  # 3 = Neutral — accepts external PRs but slow
+  # 4 = Friendly — responds to external PRs
+  # 5 = Very friendly — quick review, constructive feedback
+
+analysis_quality: 0     # 1-5
+  # 1 = Template filling — no real project analysis
+  # 2 = Shallow — read README only
+  # 3 = Adequate — read README + CONTRIBUTING + CI
+  # 4 = Good — ran tools, checked open PRs, studied codebase
+  # 5 = Excellent — found non-obvious gap, studied maintainer style
+
+failures:               # List of things that went wrong
+  - category: ""        # project-selection | trust | technical | process
+    description: ""     # What happened
+    root_cause: ""      # Why it happened
+    prevention: ""      # How to avoid next time
+
+learnings:              # Key takeaways from this PR attempt
+  - ""
+
+trust_level: ""         # first-contact | established | trusted
+  # first-contact = First PR to this project
+  # established = 2-3 successful interactions
+  # trusted = Maintainer recognizes and trusts contributions
+
+outcome_notes: ""       # Free-form notes on what happened and why

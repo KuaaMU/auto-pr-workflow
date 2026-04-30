@@ -1,0 +1,207 @@
+# Project Friendliness Registry
+# Tracks which projects are receptive to AI-generated contributions.
+# Updated based on real PR attempts and outcomes.
+
+# Fields:
+#   owner/repo:
+#     ai_friendly: true | moderate | false | unknown
+#     stars: int
+#     language: string
+#     notes: string — context about the project's attitude
+#     recommended_first_pr_type: docs | test | bug-fix | ci | tooling
+#     merge_likelihood: high | moderate | low | very-low
+
+# Legend:
+#   true     = Merged an AI PR or explicitly accepts automated contributions
+#   moderate = No explicit policy, maintainer responsive to external PRs
+#   false    = Rejected AI PRs or explicitly prohibits automated contributions
+#   unknown  = No data yet — haven't submitted or observed
+
+# ─── Merged ───────────────────────────────────────────────
+
+tod-org/tod:
+  ai_friendly: true
+  stars: 300
+  language: Rust
+  notes: >
+    Merged PR #1577 (once_cell → LazyLock migration) in 2 days.
+    Comprehensive CI (tests, clippy, fmt, commitlint, gitleaks, CodeQL).
+    Well-maintained, responsive to external contributions.
+  recommended_first_pr_type: bug-fix
+  merge_likelihood: high
+
+# ─── Positive / Review In Progress ────────────────────────
+
+PostHog/posthog-js:
+  ai_friendly: moderate
+  stars: 1500
+  language: TypeScript
+  notes: >
+    PR #3508 (flush response body consumption) received positive review.
+    Vercel checks require authorization for fork PRs (expected).
+    Large org — review may take time.
+  recommended_first_pr_type: bug-fix
+  merge_likelihood: moderate
+
+unjs/consola:
+  ai_friendly: moderate
+  stars: 6000
+  language: TypeScript
+  notes: >
+    PR #417 (emoji width fix) — CodeRabbit found 3 issues, all addressed.
+    Maintainer responsive. Project has active development.
+  recommended_first_pr_type: bug-fix
+  merge_likelihood: moderate
+
+KuaaMU/omnihive:
+  ai_friendly: true
+  stars: 0
+  language: Rust
+  notes: >
+    Own project — PR #8 fixed CodeRabbit findings (cost accumulation, shell injection test).
+    Useful for testing the workflow on a controlled project.
+  recommended_first_pr_type: any
+  merge_likelihood: high
+
+# ─── Waiting for Maintainer Response ──────────────────────
+
+chadbyte/clay:
+  ai_friendly: unknown
+  stars: 249
+  language: JavaScript
+  notes: >
+    PR #351 (CI test execution) — submitted, CI passing, no maintainer response.
+    Solo-maintained, strict control over direction.
+    Previous PR #1 (template-based) also no response.
+  recommended_first_pr_type: ci
+  merge_likelihood: low
+
+dswd/vpncloud:
+  ai_friendly: unknown
+  stars: 388
+  language: Rust
+  notes: >
+    PR #389 (CI modernization) — no CI triggered on fork, no maintainer response.
+    CI only has pull_request trigger, not push.
+  recommended_first_pr_type: ci
+  merge_likelihood: low
+
+i-love-flamingo/dingo:
+  ai_friendly: unknown
+  stars: 100
+  language: Go
+  notes: >
+    PR #86 — open, no reviews, no maintainer response.
+  recommended_first_pr_type: docs
+  merge_likelihood: very-low
+
+garritfra/cell:
+  ai_friendly: unknown
+  stars: 100
+  language: Rust
+  notes: >
+    PR #85 — open, no CI, no maintainer response.
+  recommended_first_pr_type: docs
+  merge_likelihood: very-low
+
+mco-org/mco:
+  ai_friendly: moderate
+  stars: 100
+  language: Python
+  notes: >
+    PR #83 (close stdout/stderr pipe) — no CI, no maintainer response.
+    Self-review caught real issues (ValueError, stderr test coverage).
+  recommended_first_pr_type: bug-fix
+  merge_likelihood: low
+
+thinking-machines-lab/batch_invariant_ops:
+  ai_friendly: unknown
+  stars: 50
+  language: Python
+  notes: >
+    PR #22 (tooling config fix + CI) — no CI, no maintainer response.
+    Had broken black/flake8 config that was invisible without running tools.
+  recommended_first_pr_type: tooling
+  merge_likelihood: low
+
+beelzebub-labs/beelzebub:
+  ai_friendly: unknown
+  stars: 100
+  language: Go
+  notes: >
+    PR #302 — no CI, no maintainer response.
+  recommended_first_pr_type: ci
+  merge_likelihood: very-low
+
+# ─── Blocked / CLA Required ──────────────────────────────
+
+dailydotdev/daily-api:
+  ai_friendly: moderate
+  stars: 462
+  language: TypeScript
+  notes: >
+    PR #3836 (CI workflow) — CLA pending, cannot sign without browser auth.
+    Project has active Claude AI assistant workflow. CLA is a hard blocker.
+  recommended_first_pr_type: ci
+  merge_likelihood: low  # CLA blocks automated signing
+
+rtk-ai/rtk:
+  ai_friendly: moderate
+  stars: 1000
+  language: TypeScript
+  notes: >
+    PR #1645 — base branch fixed (master → develop), but CLA pending.
+    Requires browser-based OAuth to sign CLA.
+  recommended_first_pr_type: bug-fix
+  merge_likelihood: low  # CLA blocks automated signing
+
+# ─── Rejected (Maintainer Preferred Own Implementation) ───
+
+progrium/go-basher:
+  ai_friendly: false
+  stars: 387
+  language: Go
+  notes: >
+    PR #61 (TOCTOU race fix) — closed, maintainer merged own PR #63 instead.
+    Maintainer's fix was more thorough (Sync, Chmod, cleanup, concurrency tests).
+    Maintainer has high quality bar — minimal fixes not accepted.
+  recommended_first_pr_type: docs  # Only docs if anything
+  merge_likelihood: very-low
+
+# ─── No CI Triggered on Fork ─────────────────────────────
+
+marco-prontera/vite-plugin-css-injected-by-js:
+  ai_friendly: unknown
+  stars: 500
+  language: TypeScript
+  notes: >
+    PR #166 (CI modernization) — CI not triggered on fork PR (pull_request only trigger).
+    CONTRIBUTING.md requires issue first, branch from develop, target develop.
+    Followed all conventions correctly.
+  recommended_first_pr_type: ci
+  merge_likelihood: moderate
+
+# ─── Configuration-Only Projects (from SKILL.md cases) ───
+
+rust-cli/config-rs:
+  ai_friendly: moderate
+  stars: 3141
+  language: Rust
+  notes: >
+    PR #751 (adjacently tagged enum sort) — open, no CI triggered.
+    Well-maintained Rust config library. Pure cargo project.
+    Referenced as successful case study in SKILL.md.
+  recommended_first_pr_type: bug-fix
+  merge_likelihood: moderate
+
+# ─── Failed Early (from SKILL.md case studies) ───────────
+
+fakecloud:
+  ai_friendly: unknown
+  stars: 263
+  language: Rust
+  notes: >
+    Too large (17MB) for analysis. Requires Docker for E2E tests.
+    Claude Code timed out twice at 600s. Environment mismatch.
+  recommended_first_pr_type: none  # Skip unless Docker available
+  merge_likelihood: very-low
