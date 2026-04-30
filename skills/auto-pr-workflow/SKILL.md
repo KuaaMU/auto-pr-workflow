@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 3.1.0
+version: 3.3.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -59,6 +59,12 @@ Agent 应该像一个有礼貌的新贡献者一样，渐进式建立信任：
 **PR 描述中诚实声明**：首次贡献时附加 "This is my first contribution to this project. Feedback welcome."
 
 **永远不要**：在第一次贡献时就提交代码逻辑改动。
+
+**例外**：如果 Issue 同时满足以下全部条件，首次贡献可以修 Bug：
+- 标有 "good first issue" 或 "easy"
+- 有明确的复现步骤或参考实现
+- 修复范围小（1-3 行核心改动）
+- 案例：rikaikun #190 — Issue 有 rikaichamp 的参考实现，修复只改 1 行条件判断
 
 ## 工作流程
 
@@ -149,6 +155,7 @@ which cargo && cargo --version     # Rust
 which python3 && python3 --version # Python
 which node && node --version       # Node
 which go && go version             # Go
+which deno && deno --version       # Deno (some TS projects use this)
 
 # 基础设施
 docker info 2>&1 | head -1         # Docker 是否可用
@@ -169,6 +176,10 @@ curl -s --connect-timeout 5 https://github.com > /dev/null && echo "GitHub OK" |
 | 磁盘 > 10GB | 大项目也行 |
 | 有 Rust 工具链 | 可选 Rust 项目 |
 | 无 Rust 工具链 | 跳过 Rust |
+| 有 Deno | 可选 Deno TS 项目 |
+| 无 Deno 且安装超时 | 跳过 Deno 项目，或分析代码后提交（CI 会验证） |
+
+**识别 Deno 项目**：有 `deno.json` 而不是 `package.json`，CI 用 `deno task` 而不是 `npm test`。
 
 **不要硬编码限制，让环境说话。**
 
@@ -492,6 +503,21 @@ git diff --cached --name-only | grep -E '(node_modules|__pycache__|\.venv|\.pyc)
 # 如果有，添加 .gitignore 并 reset
 ```
 
+### 6. 网络超时：clone/install 下载失败
+
+**问题**：在带宽受限环境中，`git clone`、`npm install`、`deno install` 等操作可能超时。
+
+**解决策略**：
+
+| 操作 | 超时对策 |
+|------|---------|
+| `git clone` | 用 `git clone --depth 1` 浅克隆（rikaikun 实测：完整克隆 60s 超时，浅克隆成功） |
+| `npm install` | 跳过本地测试，直接提交让 CI 验证。或者只 `npm install` 需要的包 |
+| `deno install` | Deno 二进制下载可能超时。如果无法安装，分析代码后提交，CI 会验证 |
+| `curl` 下载大文件 | 用 `wget --timeout=30` 代替，或跳过该步骤 |
+
+**关键原则**：不要因为本地无法运行测试就放弃提交。如果你对代码改动有信心（基于代码分析），提交让 CI 验证。在 PR 描述中说明"Could not run tests locally due to network limitations; CI will verify."
+
 ### 6. Go: 理解库 API 语义再设计修复
 
 **问题**：设计修复方案时假设库函数行为，实际行为不同
@@ -738,7 +764,72 @@ grep -r "redis\|mongo\|kafka\|rabbit" __tests__/ --include="*.ts" -l
 
 **教训**：CI 服务容器配置必须覆盖 setup + teardown + 测试文件中所有外部依赖。
 
-### 10. AGENTS.md 是项目分析的金矿
+### 10. 测试"不跳过字符"修复时的陷阱
+
+**问题**：修复"当字符 X 在首位时不跳过"的逻辑后，测试 `translate('X')` 返回 null 而不是预期结果。
+
+**根因**：字符 X 可能根本不在字典中。`translate` 在字典查找失败后会跳过 1 个字符继续，最终如果没有匹配就返回 null。这和"被跳过"的最终结果一样——无法区分。
+
+**案例（rikaikun #2978）**：
+- 修复：`～`（U+FF5E）在首位时不跳过
+- 错误测试：`translate('～')` → null（字典中没有 `～` 条目）
+- 正确测试：`translate('～猫')` → 验证 `猫` 被找到（证明 `～` 没有阻止后续查找）
+
+**正确做法**：
+```typescript
+// ❌ 错误：假设字符本身在字典中
+const result = rcxDict.translate('～');
+expect(result?.data).to.have.length(1);
+
+// ✅ 正确：用字符 + 已知在字典中的词
+const result = rcxDict.translate('～猫');
+expect(result?.data).to.have.length(1);
+expect(result?.data[0].entry).to.match(/猫/);
+```
+
+**后续陷阱（同 PR 第二次 CI 失败）**：
+```typescript
+// ❌ 错误：改了输入没改断言
+const result = rcxDict.translate('～可爱');
+expect(result?.data[0].entry).to.match(/猫/);  // ← 断言是旧的！
+
+// ✅ 正确：断言必须匹配当前输入的实际输出
+const result = rcxDict.translate('～可爱');
+expect(result?.data[0].entry).to.match(/可爱/);
+```
+
+**教训**：测试修复时，先验证测试输入是否存在于数据源中。不要假设所有字符都有字典条目。
+
+**续坑 — 输入改了但断言没跟上（rikaikun #2978 CI 失败）**：
+
+第一轮修复把 `translate('～')` 改成 `translate('～猫')`，断言正确。但后来又把输入改成 `translate('～可爱')`，断言仍然是 `/猫/` — CI 报错 `expected '可爱...' to match /猫/`。
+
+**根因**：修改测试输入时，没有同步更新断言。LLM 在多次修改测试时容易犯这个错——改了 "setup" 忘了改 "assert"。
+
+**防御规则**：
+1. 每次修改测试输入后，立即问：这个输入会产生什么输出？
+2. 在 PR 描述的 Verification 中写明预期行为，提交前对照检查
+3. 自审时专门检查：测试的 input 和 assertion 是否匹配？
+
+```typescript
+// ❌ 输入改了，断言没改
+const result = rcxDict.translate('～可爱');
+expect(result?.data[0].entry).to.match(/猫/);  // ← 还在用旧的预期
+
+// ✅ 断言跟着输入走
+const result = rcxDict.translate('～可爱');
+expect(result?.data[0].entry).to.match(/可爱/);  // ← 匹配实际输出
+```
+
+### 11. Deno 项目在受限环境中不可用
+
+**问题**：安全策略阻止 `curl | sh` 安装模式，Deno 无法安装。
+
+**识别 Deno 项目**：有 `deno.json` 而不是 `package.json`，CI 用 `deno task` 而不是 `npm test`。
+
+**解决**：搜索 TypeScript 项目时直接跳过 Deno 项目。nshiab/simple-data-analysis 就是一个例子——344 星，有 CI 和 open issues，但用 Deno，无法本地测试。
+
+### 12. AGENTS.md 是项目分析的金矿
 
 **发现**：越来越多的项目有 `AGENTS.md` 文件，包含：
 - 精确的工具链版本（Node.js、pnpm、Python 等）
@@ -754,7 +845,7 @@ cat AGENTS.md 2>/dev/null || cat .github/copilot-instructions.md 2>/dev/null
 
 **价值**：AGENTS.md 里的信息比 README 更精确、更实用，尤其是数据库连接参数和测试配置。
 
-### 11. Fork PR CI 不触发
+### 13. Fork PR CI 不触发
 
 **问题**：提交 PR 后 `gh pr checks` 显示 "no checks reported"。
 
@@ -781,7 +872,7 @@ on:
 
 **教训**：不要因为 CI 没触发就认为 PR 有问题。很多项目出于安全考虑（防止恶意 workflow）不自动触发 fork PR 的 CI。
 
-### 12. CodeQL v1 Actions 已废弃
+### 14. CodeQL v1 Actions 已废弃
 
 **问题**：老项目经常使用 `github/codeql-action@v1`，这些 action 已经废弃。
 
@@ -825,6 +916,26 @@ git branch -a | grep develop
 
 ### 8. Shellcheck 误报导致 CI 失败
 
+### 14. 首次贡献修 Bug — rikaikun #190
+
+**背景**：rikaikun（Chrome 日语词典扩展，⭐475）Issue #190 标记为 P1、easy、good first issue，自 2020 年未解决。
+
+**为什么首次贡献可以修这个 Bug**：
+- Issue 有 rikaichamp 的参考实现（3 行代码）
+- 修复只改 1 行条件判断 + 更新 1 行注释
+- 有现有测试可验证不回退
+- 项目 CONTRIBUTING.md 明确欢迎贡献
+
+**执行过程**：
+1. 浅克隆（`--depth 1`）因为完整克隆超时
+2. 读 `character_info.ts` 理解 SKIPPABLE 机制
+3. 读 `data.ts` 找到使用点
+4. 修改条件：`!(currentCharCode === SKIPPABLE.J_TILDE && result.length === 0)`
+5. 添加测试：验证 standalone `～` 被查词
+6. 提交 PR #2978
+
+**教训**：信任梯度不是死规则。当 Issue 有参考实现、标记为 easy/good-first-issue、改动范围极小时，首次贡献修 Bug 是合理的。
+
 **问题**：shellcheck 默认对 info 级别也返回非零退出码，CI 中 `set -e` 导致失败
 
 **常见误报**：
@@ -838,6 +949,68 @@ git branch -a | grep develop
 ```
 
 **原则**：只排除确认的误报，不要排除真正的 warning（如 SC2086 变量未引用）
+
+### 15. `gh run view --log-failed` 返回空
+
+**问题**：CI 步骤失败但 `gh run view <RUN_ID> --log-failed` 返回空输出。
+
+**常见原因**：日志太长或错误嵌套在 group/step 层级中，`--log-failed` 无法精确定位。
+
+**诊断方法**：
+```bash
+# 方法 1：先看哪个 job/step 失败
+gh run view <RUN_ID> --repo <owner/repo>  # 看 JOBS 列表
+
+# 方法 2：用 API 拿完整日志，grep 错误
+gh api repos/<owner>/<repo>/actions/jobs/<JOB_ID>/logs 2>&1 | grep -i "error\|fail\|FAIL\|Error" | grep -v "##\[debug\]" | head -20
+
+# 方法 3：只拿失败步骤的日志
+gh api repos/<owner>/<repo>/actions/jobs/<JOB_ID>/logs 2>&1 | grep -B5 -A10 "exit code 1"
+```
+
+**案例（rikaikun #2978）**：`--log-failed` 返回空，但 `gh api .../logs | grep error` 找到了 `AssertionError: expected '可爱...' to match /猫/`。
+
+### 16. Open PR 积压管理
+
+**问题**：持续创建新 PR 导致 open PR 数量过多，维护者审查负担大，自身监控成本高。
+
+**策略**：
+- **阈值**：open PR > 15 时，暂停创建新 PR，优先推动已有 PR 合并
+- **优先级**：修复已有 PR 的 CI 失败 > 回应 review 反馈 > 创建新 PR
+- **语言轮换暂停**：积压期间不按轮换找新项目
+
+**理由**：20+ open PR 会分散注意力，每个 PR 都需要监控 CI、回应 review。集中精力推几个 PR 到合并比广撒网更有效。
+
+### 17. PR 描述中的反引号被 Shell 吞掉
+
+**问题**：`gh pr create --body` 和 `gh pr edit --body` 中的反引号（backtick）会被 bash 解释为命令替换，导致 PR 描述中的代码引用丢失。
+
+**症状**：
+- PR 描述中 `` `SmartDashboard.putData()` `` 变成空字符串
+- Shell 报 `syntax error: unexpected end of file`
+
+**解决**：
+```bash
+# 方法 1：写入文件，用 --body-file
+cat > /tmp/pr_body.md << 'EOF'
+## Summary
+Fix `SmartDashboard.putData()` call...
+EOF
+gh pr create --body-file /tmp/pr_body.md
+
+# 方法 2：用 gh api 直接更新
+gh api repos/OWNER/REPO/pulls/NUM --method PATCH --field body="$(cat /tmp/pr_body.md)"
+
+# 方法 3：用 heredoc 的单引号模式保护反引号
+gh pr create --body "$(cat << 'EOF'
+Fix `some_function()` call...
+EOF
+)"
+```
+
+**关键**：`<< 'EOF'`（单引号）防止变量展开和命令替换。`<< EOF`（无引号）仍然会展开。
+
+**教训**：任何包含反引号、`$()`、或特殊字符的 PR 描述，必须通过文件传递，不能直接作为命令行参数。
 
 ## 提交前验证清单
 
@@ -956,4 +1129,5 @@ Step 5: 汇报（仅重大事件）
 ## 详细文档
 
 - [测试记录](../test-records/README.md)
+- [GitHub CLI 坑点](references/gh-cli-quirks.md)
 - [项目主页](https://github.com/KuaaMU/auto-pr-workflow)
