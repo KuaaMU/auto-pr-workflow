@@ -14,18 +14,18 @@ jobs:
       
       - name: Setup
         run: |
-          chmod +x bin/auto-pr
-          chmod +x tests/*.sh
+          chmod +x cli/bin/auto-pr
+          chmod +x cli/tests/*.sh
       
       - name: Check bash syntax
         run: |
-          for f in bin/* src/*.sh tests/*.sh; do
+          for f in cli/bin/* cli/src/*.sh cli/tests/*.sh; do
             bash -n "$f"
           done
       
       - name: Run tests
         run: |
-          ./tests/test_init.sh ./bin/auto-pr
+          ./cli/tests/test_init.sh ./cli/bin/auto-pr
   
   lint:
     runs-on: ubuntu-latest
@@ -37,5 +37,5 @@ jobs:
       
       - name: Run shellcheck
         run: |
-          find . -name "*.sh" -exec shellcheck {} \;
-          shellcheck bin/auto-pr
+          find . -name "*.sh" -exec shellcheck -x {} \;
+          shellcheck -x cli/bin/auto-pr

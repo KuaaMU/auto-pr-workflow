@@ -23,7 +23,7 @@ echo "=========================================="
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该成功"
-if $CLI_DIR/bin/auto-pr check > /dev/null 2>&1; then
+if "$CLI_DIR"/bin/auto-pr check > /dev/null 2>&1; then
     echo -e "${GREEN}✅ PASS: check 命令应该成功${NC}"
     ((PASSED++))
 else
@@ -34,7 +34,7 @@ fi
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该输出环境信息"
-if $CLI_DIR/bin/auto-pr check 2>&1 | grep -q 'Git 已安装'; then
+if "$CLI_DIR"/bin/auto-pr check 2>&1 | grep -q 'Git 已安装'; then
     echo -e "${GREEN}✅ PASS: check 命令应该输出环境信息${NC}"
     ((PASSED++))
 else
@@ -45,7 +45,7 @@ fi
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该检测 Node.js"
-if $CLI_DIR/bin/auto-pr check 2>&1 | grep -q 'Node.js 已安装'; then
+if "$CLI_DIR"/bin/auto-pr check 2>&1 | grep -q 'Node.js 已安装'; then
     echo -e "${GREEN}✅ PASS: check 命令应该检测 Node.js${NC}"
     ((PASSED++))
 else
@@ -56,7 +56,7 @@ fi
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该检测 GitHub CLI"
-if $CLI_DIR/bin/auto-pr check 2>&1 | grep -q 'GitHub CLI 已安装'; then
+if "$CLI_DIR"/bin/auto-pr check 2>&1 | grep -q 'GitHub CLI 已安装'; then
     echo -e "${GREEN}✅ PASS: check 命令应该检测 GitHub CLI${NC}"
     ((PASSED++))
 else
@@ -67,7 +67,7 @@ fi
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该检测 GitHub CLI 登录状态"
-if $CLI_DIR/bin/auto-pr check 2>&1 | grep -q 'GitHub CLI 已登录'; then
+if "$CLI_DIR"/bin/auto-pr check 2>&1 | grep -q 'GitHub CLI 已登录'; then
     echo -e "${GREEN}✅ PASS: check 命令应该检测 GitHub CLI 登录状态${NC}"
     ((PASSED++))
 else
@@ -78,7 +78,7 @@ fi
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该输出总结"
-if $CLI_DIR/bin/auto-pr check 2>&1 | grep -q '环境检查通过'; then
+if "$CLI_DIR"/bin/auto-pr check 2>&1 | grep -q '环境检查通过'; then
     echo -e "${GREEN}✅ PASS: check 命令应该输出总结${NC}"
     ((PASSED++))
 else
@@ -89,7 +89,7 @@ fi
 ((TESTS++))
 echo ""
 echo "测试: check 命令应该加载配置文件"
-if $CLI_DIR/bin/auto-pr check 2>&1 | grep -q '使用默认配置'; then
+if "$CLI_DIR"/bin/auto-pr check 2>&1 | grep -q '使用默认配置'; then
     echo -e "${GREEN}✅ PASS: check 命令应该加载配置文件${NC}"
     ((PASSED++))
 else
