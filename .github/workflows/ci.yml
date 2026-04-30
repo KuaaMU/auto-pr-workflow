@@ -37,5 +37,6 @@ jobs:
       
       - name: Run shellcheck
         run: |
-          find . -name "*.sh" -exec shellcheck -x {} \;
-          shellcheck -x cli/bin/auto-pr
+          # SC1091: Not following sourced files (info only, paths are relative to script location)
+          find . -name "*.sh" -exec shellcheck --exclude=SC1091 {} \;
+          shellcheck --exclude=SC1091 cli/bin/auto-pr
