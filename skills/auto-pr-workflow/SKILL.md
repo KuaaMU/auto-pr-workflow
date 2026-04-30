@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 2.5.0
+version: 2.9.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -214,22 +214,40 @@ except (OSError, ValueError):
 | 输出要求 | 明确（报告/代码/测试） | 模糊（"分析一下"） |
 | 工具限制 | 指定用哪些工具 | 让它自己选 |
 
-**拆任务模板：**
+**验证有效的任务模板（config-rs 实测）：**
 
 ```bash
-# 第一步：信息收集（只读，不改）
-delegate_task --goal "读文件 X，报告 Y 是否有 Z" --toolsets '["file"]'
-
-# 第二步：写代码（基于第一步结果）
-delegate_task --goal "在文件 X 的 Y 函数里加 Z" --toolsets '["file"]'
-
-# 第三步：验证（如果能跑测试）
-delegate_task --goal "跑 cargo test / pytest 验证" --toolsets '["terminal", "file"]'
+# 你已经分析完根因，让 Claude Code 只做执行
+delegate_task \
+  --goal "在 src/de.rs 的 MapAccess::new 函数里，对 entries 按 key 排序" \
+  --context "
+当前代码：
+\`\`\`rust
+fn new(table: Map<String, Value>) -> Self {
+    Self { elements: table.into_iter().collect() }
+}
+\`\`\`
+改为：
+\`\`\`rust
+fn new(table: Map<String, Value>) -> Self {
+    let mut elements: VecDeque<(String, Value)> = table.into_iter().collect();
+    elements.make_contiguous().sort_by_key(|(k, _)| k.clone());
+    Self { elements }
+}
+\`\`\`
+加测试：跑 20 次 adjacently tagged enum 反序列化，验证每次都成功。
+跑 cargo test 验证。
+" \
+  --toolsets '["file", "terminal"]'
 ```
+
+**关键区别：**
+- ❌ "找到 bug 并修复" → Claude Code 做决策，可能走偏
+- ✅ "这个函数改成这样" → 你做决策，Claude Code 只执行
 
 **超时对策：**
 - 600 秒超时 = 任务太大，拆成更小的块
-- 连续 2 次超时 = 换项目或换策略（自己分析，只让 Claude Code 写代码）
+- 连续 2 次超时 = 换策略（自己分析，只让 Claude Code 写代码）
 
 ```bash
 # 用 Claude Code 分析并编写代码
@@ -545,6 +563,56 @@ delegate_task --goal "在 rds_persistence.rs 加 DB instance 持久化测试" --
 3. **超时 = 任务太大，不是 Claude Code 不行** — 拆小就好
 4. **分析可以自己做，编码交给 Claude Code** — 分析不需要 Claude Code，写代码才需要
 
+### 案例 4: config-rs — 完整流程的成功案例
+
+**背景**：测试 auto-pr-workflow skill v2.7.0，选了 config-rs（Rust 配置库 ⭐3141）修 adjacently tagged enum 反序列化 bug。
+
+**流程复盘：**
+
+| 步骤 | 做了什么 | 耗时 | 效果 |
+|------|---------|------|------|
+| 环境评估 | 检查 cargo/python/node/docker | 30s | ✅ 确认有 cargo，无 Docker |
+| 选项目 | 基于环境选纯 cargo 项目 | 2min | ✅ 选对了 |
+| 对比学习 | 自己读 env.rs + de.rs | 5min | ✅ 找到根因（HashMap 无序） |
+| Claude Code 编码 | 给精确任务：改 1 个函数 + 加 1 个测试 | 108s | ✅ 完成，147 测试通过 |
+| 自审 | 第二个实例审查 | 66s | ✅ 发现 2 个改进点 |
+| 修复 | 应用 style 建议 | 30s | ✅ 手动修复 |
+| 提交 PR | fork + push + gh pr create | 30s | ✅ PR #751 |
+
+**成功关键：**
+
+1. **环境评估避免了错误选择** — 有 cargo，无 Docker，选纯 cargo 项目
+2. **对比学习是自己做的** — 读了 env.rs 和 de.rs，找到了根因，然后把精确修复方案传给 Claude Code
+3. **Claude Code 任务极小** — "改 MapAccess::new 函数，排序 entries，加一个测试"。不是"分析整个反序列化系统"
+4. **自审用了第二个实例** — 发现 `sort_by_key` 比 `sort_by` 更简洁
+
+**Claude Code 任务模板（验证有效）：**
+
+```
+goal: "在 [文件] 的 [函数] 里做 [具体修改]"
+context: "当前代码：[贴代码]。修改为：[贴修改]。加测试验证：[贴测试]"
+toolsets: ["file", "terminal"]
+```
+
+**关键区别：**
+- ❌ "找到 bug 并修复" → Claude Code 做决策，可能走偏
+- ✅ "这个函数改成这样" → 你做决策，Claude Code 只执行
+
+**任务精确度光谱（越右越好）：**
+
+| 精确度 | 示例 | 耗时 | 正确率 |
+|--------|------|------|--------|
+| 低 | "修复 emoji 宽度计算" | 431s | 有 bug |
+| 中 | "重写 stringWidth，处理 ZWJ/flag/skin tone" | ~200s | 大概率对 |
+| 高 | "改成这段代码，加这个测试" | 108s | 几乎一定对 |
+
+**经验法则**：如果你能写出修复代码，就自己写，只让 Claude Code 写测试。如果你不确定怎么修，才让 Claude Code 决定，但要准备自审。
+
+**对比学习的正确姿势：**
+- ❌ 让 Claude Code 自己读项目学模式 → 它不会主动学
+- ✅ 你自己读完，把模式作为 context 传入 → 它会模仿
+- ✅ 最好直接告诉它改什么 → 跳过学习，直接执行
+
 ### 案例 2: mco PR #83 — 自审抓到的真实问题
 
 **背景**：Issue #82 报告 `AcpTransport.close()` 没关 stdout pipe，导致 ResourceWarning。
@@ -611,6 +679,75 @@ cat AGENTS.md 2>/dev/null || cat .github/copilot-instructions.md 2>/dev/null
 ```
 
 **价值**：AGENTS.md 里的信息比 README 更精确、更实用，尤其是数据库连接参数和测试配置。
+
+### 11. Fork PR CI 不触发
+
+**问题**：提交 PR 后 `gh pr checks` 显示 "no checks reported"。
+
+**根因**：项目 CI 只有 `pull_request` trigger（没有 `push`），fork PR 在维护者 approve 之前不会触发 CI。
+
+**常见模式**：
+```yaml
+# 只有这种 trigger 的项目 → fork PR 不触发
+on:
+  pull_request:
+    branches: [main]
+
+# 有这种 trigger 的项目 → fork PR 会触发
+on:
+  push:
+    branches: [main]
+  pull_request:
+```
+
+**解决**：
+- 这是预期行为，不是你的 PR 有问题
+- 等维护者 review 后 CI 会自动触发
+- 在 PR 描述中说明"CI will run on review"让维护者知道
+
+**教训**：不要因为 CI 没触发就认为 PR 有问题。很多项目出于安全考虑（防止恶意 workflow）不自动触发 fork PR 的 CI。
+
+### 12. CodeQL v1 Actions 已废弃
+
+**问题**：老项目经常使用 `github/codeql-action@v1`，这些 action 已经废弃。
+
+**诊断**：
+```bash
+grep -r "codeql-action@" .github/workflows/
+# 如果看到 @v1 → 需要更新到 @v3
+```
+
+**解决**：
+```yaml
+# 更新前
+- uses: github/codeql-action/init@v1
+- uses: github/codeql-action/autobuild@v1
+- uses: github/codeql-action/analyze@v1
+
+# 更新后
+- uses: github/codeql-action/init@v3
+- uses: github/codeql-action/autobuild@v3
+- uses: github/codeql-action/analyze@v3
+```
+
+**价值**：这是一个高价值、低风险的 PR 方向。CodeQL v1 使用已废弃的 runner，更新到 v3 确保安全扫描继续工作。
+
+### 13. CONTRIBUTING.md 分支约定
+
+**问题**：项目要求从 `develop` 分支创建 PR，但你从 `main` 分支创建了 PR。
+
+**案例（vite-plugin-css-injected-by-js）**：
+- CONTRIBUTING.md 明确要求：branch from `develop`, target `develop`
+- 如果从 `main` 创建 PR → 可能被拒绝或需要重新创建
+
+**诊断**：
+```bash
+# 提交 PR 前，检查：
+cat CONTRIBUTING.md | grep -i "branch\|develop\|main\|target"
+git branch -a | grep develop
+```
+
+**教训**：不要默认用 `main` 分支。先读 CONTRIBUTING.md 看它要求什么分支约定。
 
 ### 8. Shellcheck 误报导致 CI 失败
 
