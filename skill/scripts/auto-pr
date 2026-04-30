@@ -1,9 +1,0 @@
-#!/bin/bash
-# Hermes Skill 包装器
-# 调用 CLI 工具
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLI_DIR="$SCRIPT_DIR/../../cli"
-
-# 调用 CLI
-"$CLI_DIR/bin/auto-pr" "$@"

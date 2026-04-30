@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 2.9.0
+version: 3.0.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -19,8 +19,8 @@ metadata:
 ## 核心理念
 
 ```
-Agent 是大脑（分析、决策、判断）
-CLI 是手脚（执行、检查、提交）
+Agent 是大脑（分析、决策、判断、执行）
+工具是基础设施（gh、git、Claude Code）
 ```
 
 ## 工作流程
@@ -309,12 +309,12 @@ done
 #### 3.5 本地检查与提交
 
 ```bash
-# 本地检查（CLI 辅助）
-auto-pr check          # 语法检查、lint
+# 本地检查
 node --test test/      # 运行测试
+# lint / format 按项目配置执行
 
-# 提交 PR
-auto-pr submit         # 或手动 gh pr create
+# 提交 PR（直接使用 gh CLI）
+# fork → branch → commit → push → gh pr create
 ```
 
 ### Phase 4: 监控与修复（Agent 循环）
@@ -338,22 +338,6 @@ gh pr view <PR#> --json reviews
 cp test-records/template.md test-records/YYYY-MM-DD_project.md
 # 填写完整记录（分析、策略、执行、结果、学习）
 ```
-
-## CLI 工具（Agent 的手）
-
-CLI 是辅助工具，不是主体。Agent 可以选择用或不用。
-
-```bash
-auto-pr check     # 本地检查（语法、lint）
-auto-pr submit    # 提交 PR（创建分支、commit、push、创建 PR）
-auto-pr watch     # 监控 CI 状态
-auto-pr review    # 查看审查反馈
-```
-
-**CLI 不做的事**：
-- 不决定提交什么（Agent 决定）
-- 不分析项目（Agent 分析）
-- 不生成内容（Agent 或 Claude Code 生成）
 
 ## 常见问题与解决方案
 
@@ -760,7 +744,7 @@ git branch -a | grep develop
 
 **解决**：
 ```yaml
-shellcheck --exclude=SC1091,SC2034,SC2120,SC2119 cli/bin/auto-pr
+# shellcheck --exclude=SC1091,SC2034,SC2120,SC2119 <script>
 ```
 
 **原则**：只排除确认的误报，不要排除真正的 warning（如 SC2086 变量未引用）
@@ -881,6 +865,5 @@ Step 5: 汇报（仅重大事件）
 
 ## 详细文档
 
-- [CLI 文档](../cli/README.md)
 - [测试记录](../test-records/README.md)
 - [项目主页](https://github.com/KuaaMU/auto-pr-workflow)

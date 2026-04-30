@@ -1,109 +1,53 @@
-# Auto-PR Workflow 🔄
+# Auto-PR Workflow
 
-**教你的 Agent 自主提交高质量 PR 的能力。**
+**教 AI Agent 自主提交高质量 PR 的方法论。**
 
-不是固定脚本，而是 Agent 的思维方式。
+不是自动化脚本，不是 CLI 工具 — 是一套让 Agent 像资深贡献者一样思考、分析、执行的工作流。
 
-## ✨ 核心理念
-
-```
-Skill 是大脑 — 教 Agent 分析、决策、判断
-CLI 是手脚 — 帮 Agent 检查、执行、提交
-```
-
-**其他工具**：CLI 为主体，Agent 调用 CLI → 固定流程 → 模板填充  
-**Auto-PR Workflow**：Skill 为主体，Agent 自主思考 → 调用 CLI → 高质量 PR
-
-## 🧠 Agent 工作流
+## 核心理念
 
 ```
-Agent 深度分析项目（读代码、文档、CI、Issues）
+Agent 是大脑 — 分析、决策、判断、执行
+工具是基础设施 — gh、git、Claude Code
+```
+
+**与竞品的区别**：
+- **Qodo Merge / CodeRabbit**：固定流程 → 模板填充
+- **Auto-PR Workflow**：深度分析 → 自主决策 → 高质量 PR
+
+## 工作流
+
+```
+深度分析项目（README、CONTRIBUTING、CI、Issues、代码）
     │
     ▼
-Agent 制定策略（什么 PR 有价值、什么会被拒绝）
+制定策略（什么 PR 有价值、什么会被拒绝）
     │
     ▼
-调用 Claude Code 执行代码工作
+调用 Claude Code 执行代码工作（小任务、精确指令）
     │
     ▼
-CLI 辅助检查（语法、lint、测试）
+自审 + 测试（第二个实例审查，覆盖并发/崩溃/边界）
     │
     ▼
 提交 PR + 监控 CI
     │
     ▼
-回应审查反馈 + 自动修复
+回应审查反馈 + 修复
     │
     ▼
-记录结果 + 学习改进
+记录结果 + 更新方法论
 ```
 
-## 📦 安装
-
-### 方式 1: 安装 Skill（推荐）
-
-让 Agent 学会这个能力：
+## 安装
 
 ```bash
-# 安装 skill
 hermes skills install https://raw.githubusercontent.com/KuaaMU/auto-pr-workflow/main/skills/auto-pr-workflow/SKILL.md -y
-
-# 验证安装
-hermes skills list | grep auto-pr-workflow
 ```
 
-### 方式 2: 安装 CLI 工具
+适用于任何支持 Skill 的 Agent 框架。核心方法论在 `skills/auto-pr-workflow/SKILL.md`，也可以直接阅读后手动执行。
 
-```bash
-# 克隆项目
-git clone https://github.com/KuaaMU/auto-pr-workflow.git
-cd auto-pr-workflow
-
-# 安装 CLI
-npm install -g .
-
-# 或直接使用
-./cli/bin/auto-pr --help
-```
-
-## 🚀 使用方式
-
-### 方式 1: 作为 Skill（推荐）
-
-让 Agent 学会这个能力：
-
-```bash
-# Agent 自主执行完整工作流
-hermes delegate_task --goal "分析项目 X，提交一个有价值的 PR" \
-  --context "使用 auto-pr-workflow skill 的方法论"
-```
-
-### 方式 2: CLI 辅助工具
-
-Agent 可以用 CLI 做具体操作：
-
-```bash
-auto-pr check     # 本地检查（语法、lint）
-auto-pr submit    # 提交 PR
-auto-pr watch     # 监控 CI 状态
-auto-pr review    # 查看审查反馈
-```
-
-**CLI 不做的事**：
-- ❌ 不决定提交什么（Agent 决定）
-- ❌ 不分析项目（Agent 分析）
-- ❌ 不生成内容（Agent 或 Claude Code 生成）
-
-## 🔍 深度分析能力
-
-Agent 学会这个 Skill 后，应该能够：
-
-1. **分析项目架构** — 读 README、CONTRIBUTING、CLAUDE.md
-2. **理解贡献政策** — 什么 PR 会被接受、什么会被拒绝
-3. **找到真实痛点** — 不是模板填充，而是项目实际需要的
-4. **制定 PR 策略** — 基于分析结果选择最高价值方向
-
-### 高价值 PR 方向
+## 高价值 PR 方向
 
 | 方向 | 价值 | 风险 |
 |------|------|------|
@@ -113,85 +57,41 @@ Agent 学会这个 Skill 后，应该能够：
 | 文档修正/完善 | ⭐⭐ | 极低 |
 | 安全漏洞修复 | ⭐⭐⭐⭐ | 低 |
 
-### 低价值方向（常被拒绝）
+**低价值方向**（常被拒绝）：通用模板填充、未讨论的新功能、引入新依赖。
 
-| 方向 | 问题 |
-|------|------|
-| 通用模板填充 | 没有分析项目实际需求 |
-| 添加新功能 | 大多数项目需要先讨论 |
-| 引入新依赖 | 需要维护者同意 |
+## 战略原则
 
-## 📁 项目结构
+**做减法再做加法**：合并率 < 10% 时，停止提交新 PR，优先推动已有 PR 合并。
 
-```
-auto-pr-workflow/
-├── skill/                  # 🧠 Agent 的大脑
-│   └── SKILL.md            # 工作流方法论
-├── cli/                    # 🤖 Agent 的手脚
-│   ├── bin/auto-pr         # CLI 入口
-│   ├── src/                # 检查、提交、监控
-│   └── templates/          # 配置模板
-├── test-records/           # 📝 测试记录
-│   ├── README.md           # 索引
-│   └── *.md                # 具体记录
-└── README.md
-```
+| 合并率 | 策略 |
+|--------|------|
+| < 10% | 停止新 PR，全力跟踪现有 PR |
+| 10-30% | 放慢节奏，增加跟踪频率 |
+| > 30% | 可以继续提交 |
 
-## 🏆 真实案例
+## 真实案例
 
-| 日期 | 项目 | Stars | 分析深度 | 结果 |
-|------|------|-------|---------|------|
-| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | 249 | ✅ Agent 自主分析 | [PR#351](https://github.com/chadbyte/clay/pull/351) |
+| 日期 | 项目 | 语言 | 结果 |
+|------|------|------|------|
+| 2026-04-30 | [tod-org/tod](https://github.com/tod-org/tod) | Rust | ✅ Merged |
+| 2026-04-30 | [PostHog/posthog-js](https://github.com/PostHog/posthog-js) | TS | 🟢 Review positive |
+| 2026-04-30 | [chadbyte/clay](https://github.com/chadbyte/clay) | — | PR submitted |
 
 **详细记录**：[test-records/](./test-records/)
 
-## 🤖 与其他工具对比
+## 项目结构
 
-| 工具 | 主体 | 思考方式 | 结果 |
-|------|------|---------|------|
-| Qodo Merge | CLI | 固定流程 | 通用审查 |
-| CodeRabbit | 服务 | 模式匹配 | 代码建议 |
-| Sweep | Agent | 任务执行 | 自动修复 |
-| **Auto-PR Workflow** | **Skill** | **深度分析** | **高质量 PR** |
-
-## 🚨 常见问题
-
-### 1. node --test 目录语法错误
-
-**问题**：`node --test test/` 尝试将目录作为模块加载
-
-**解决**：使用 glob 模式
-```bash
-node --test test/*.test.js
+```
+auto-pr-workflow/
+├── skills/
+│   └── auto-pr-workflow/
+│       ├── SKILL.md          # 核心方法论
+│       └── templates/        # 配置模板（CodeRabbit、PR 模板等）
+├── test-records/             # 案例库
+├── .github/                  # 项目自身 CI
+└── README.md
 ```
 
-### 2. 测试进程挂起
-
-**问题**：测试通过但进程不退出（SQLite、WebSocket 等保持连接）
-
-**解决**：使用 --test-force-exit
-```bash
-node --test --test-force-exit test/*.test.js
-```
-
-### 3. CI 与现有 workflow 重复
-
-**问题**：auto-pr init 生成的 CI 与项目现有 CI 功能重叠
-
-**解决**：
-- 先检查 `.github/workflows/` 已有配置
-- 选择互补策略，而不是重复
-- 优先修复现有 CI 的遗漏
-
-### 4. CodeRabbit 反馈处理
-
-**问题**：CodeRabbit 提出代码风格或项目规范问题
-
-**解决**：
-- 读取 CLAUDE.md 了解项目规范
-- 根据反馈更新代码或配置
-- 保持与项目现有风格一致
-
-## 📄 License
+## License
 
 MIT

@@ -7,38 +7,20 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      
-      - name: Setup
+
+      - name: Validate SKILL.md
         run: |
-          chmod +x cli/bin/auto-pr
-          chmod +x cli/tests/*.sh
-      
-      - name: Check bash syntax
+          # Ensure SKILL.md exists and has frontmatter
+          test -f skills/auto-pr-workflow/SKILL.md
+          head -1 skills/auto-pr-workflow/SKILL.md | grep -q "^---"
+          echo "SKILL.md OK"
+
+      - name: Validate test records
         run: |
-          for f in cli/bin/* cli/src/*.sh cli/tests/*.sh; do
-            bash -n "$f"
-          done
-      
-      - name: Run tests
-        run: |
-          ./cli/tests/test_init.sh ./cli/bin/auto-pr
-  
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      
-      - name: Install shellcheck
-        run: sudo apt-get install -y shellcheck
-      
-      - name: Run shellcheck
-        run: |
-          # SC1091: Not following sourced files (info only, paths are relative to script location)
-          # SC2034: Variable appears unused (false positive for indirect array references)
-          # SC2120/SC2119: Function references arguments but none passed (designed for optional args)
-          find . -name "*.sh" -exec shellcheck --exclude=SC1091,SC2034,SC2120,SC2119 {} \;
-          shellcheck --exclude=SC1091,SC2034,SC2120,SC2119 cli/bin/auto-pr
+          # Ensure test records directory has content
+          ls test-records/*.md | grep -v README.md | grep -v template.md
+          echo "Test records OK"
