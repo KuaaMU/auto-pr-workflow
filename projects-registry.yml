@@ -184,15 +184,16 @@ marco-prontera/vite-plugin-css-injected-by-js:
 # ─── Configuration-Only Projects (from SKILL.md cases) ───
 
 rust-cli/config-rs:
-  ai_friendly: moderate
+  ai_friendly: false
   stars: 3141
   language: Rust
   notes: >
-    PR #751 (adjacently tagged enum sort) — open, no CI triggered.
-    Well-maintained Rust config library. Pure cargo project.
-    Referenced as successful case study in SKILL.md.
-  recommended_first_pr_type: bug-fix
-  merge_likelihood: moderate
+    Maintainer (epage) explicitly criticized AI PR template and process.
+    CONTRIBUTING.md requires discussing approach in Issue before submitting PR.
+    Maintainer said fix was incomplete and PR template focused on irrelevant parts.
+    PR #751 open with no CI triggered and maintainer feedback.
+  recommended_first_pr_type: docs
+  merge_likelihood: very-low
 
 # ─── Failed Early (from SKILL.md case studies) ───────────
 

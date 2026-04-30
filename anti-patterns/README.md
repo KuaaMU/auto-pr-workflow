@@ -184,7 +184,22 @@ Real failure patterns extracted from PR test records. Each entry documents what 
 - Add `.gitignore` before first commit if missing
 - Never use `git add .` — always add specific files
 
-### 14. CodeRabbit / AI Review Finding Real Issues
+### 14. Maintainer Criticizes AI PR Template and Process
+
+**Pattern**: Maintainer explicitly rejects the AI-generated PR format and requests that the contributor discuss the approach in an Issue before submitting code.
+
+**Description**: The PR was technically valid but violated the project's contribution process. The maintainer pointed out that: (1) the PR template focused on irrelevant details, (2) the contributor should have gotten buy-in on the solution approach first, and (3) the fix was incomplete.
+
+**Real Example**: `rust-cli/config-rs` PR #751 — epage commented: "We generally encourage getting buy-in on solutions before moving on to implementations. Please do not use that AI PR template as it tends to focus on the most irrelevant parts that need to be communicated to reviewers. I don't think this completely closes the linked issue."
+
+**Prevention**:
+- **Always read CONTRIBUTING.md first** — many projects require Issue discussion before PR
+- **Never use generic AI PR templates** — write concise, project-specific descriptions
+- **Open an Issue first** for non-trivial fixes, describe the approach, wait for maintainer acknowledgment
+- **Ask: "Does this completely fix the issue?"** — partial fixes frustrate maintainers more than no fix
+- Phase 1.4 maintainer friendliness assessment would have caught this (CONTRIBUTING.md explicitly says to discuss first)
+
+### 15. CodeRabbit / AI Review Finding Real Issues
 
 **Pattern**: AI code review (CodeRabbit, Copilot) finds legitimate issues in the submitted code that the agent missed.
 
