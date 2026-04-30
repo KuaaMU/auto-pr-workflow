@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 2.3.0
+version: 2.4.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -226,7 +226,25 @@ git diff --cached --name-only | grep -E '(node_modules|__pycache__|\.venv|\.pyc)
 # 如果有，添加 .gitignore 并 reset
 ```
 
-### 6. CodeRabbit 反馈处理
+### 6. Go: 理解库 API 语义再设计修复
+
+**问题**：设计修复方案时假设库函数行为，实际行为不同
+
+**案例（go-basher）**：
+```go
+// 假设 RestoreAsset 可以写入任意文件 → 错误
+RestoreAsset(tmpFile, "bash")  // 实际总是写入 dir/name
+
+// 正确理解：RestoreAsset(dir, name) 总是写入 dir/name
+// 解决：用临时目录 + os.Rename
+tmpDir, _ := os.MkdirTemp(bashDir, "extract-*")
+RestoreAsset(tmpDir, "bash")
+os.Rename(tmpDir+"/bash", bashPath)
+```
+
+**教训**：在编写修复代码前，先确认函数签名和实际行为。特别是嵌入式资源、代码生成工具（go-bindata、embed 等）的 API 可能有隐含约束。
+
+### 7. CodeRabbit 反馈处理
 
 **问题**：CodeRabbit 提出代码风格或项目规范问题
 
@@ -234,6 +252,22 @@ git diff --cached --name-only | grep -E '(node_modules|__pycache__|\.venv|\.pyc)
 - 检查项目编码规范文件（如 .github/instructions/）
 - 根据反馈更新代码或配置
 - 保持与项目现有风格一致
+
+### 7. Shellcheck 误报导致 CI 失败
+
+**问题**：shellcheck 默认对 info 级别也返回非零退出码，CI 中 `set -e` 导致失败
+
+**常见误报**：
+- SC1091: `source` 的相对路径在 CI 环境中解析失败
+- SC2034: 间接数组引用被误判为未使用变量
+- SC2120/SC2119: 函数设计为可选参数但被误报
+
+**解决**：
+```yaml
+shellcheck --exclude=SC1091,SC2034,SC2120,SC2119 cli/bin/auto-pr
+```
+
+**原则**：只排除确认的误报，不要排除真正的 warning（如 SC2086 变量未引用）
 
 ## 提交前验证清单
 
@@ -264,14 +298,74 @@ git diff --cached --name-only | grep -E '(node_modules|__pycache__|\.venv|\.pyc)
 ## 与 Hermes 集成
 
 ```bash
-# 让 Agent 自主执行完整工作流
+# 单次执行：让 Agent 自主提交一个 PR
 hermes delegate_task --goal "分析项目 X，提交一个有价值的 PR" \
   --context "使用 auto-pr-workflow skill 的方法论"
 
-# 定期监控 PR 状态
-hermes cronjob create --schedule "*/10 * * * *" \
-  --prompt "检查所有开放 PR 的 CI 状态"
+# 持续执行：自主循环测试（详见「自主循环测试」章节）
+hermes cronjob create --schedule "every 1h" \
+  --name "auto-pr-workflow 循环测试" \
+  --skill auto-pr-workflow --deliver local \
+  --prompt "检查现有 PR → 找新项目 → 执行 → 更新 skill → 仅重大事件通知"
 ```
+
+## 自主循环测试（Continuous Testing Loop）
+
+**设置定时任务让 Agent 自主持续测试和改进 skill。**
+
+### 模式
+
+```
+检查现有 PR → 找新项目 → 执行工作流 → 更新 skill → 记录
+     ↑                                                    |
+     └──────────────── 每小时循环 ←────────────────────────┘
+```
+
+### 设计原则
+
+1. **静默执行** — 只在重大事件时通知用户（PR 合并/拒绝/CI 持续失败）
+2. **语言轮换** — 每次测试不同语言（JS → Python → Go → Rust → TS）
+3. **自我改进** — 发现新坑点立即更新 skill，不等用户指示
+4. **去重优先** — 先检查已有 PR 状态，再决定下一步
+
+### Cron Job 模板
+
+```bash
+hermes cronjob create --schedule "every 1h" --name "auto-pr-workflow 循环测试" \
+  --skill auto-pr-workflow --deliver local --prompt "
+你是 auto-pr-workflow skill 的自动测试 Agent。
+
+Step 1: 检查现有 PR 状态
+  gh search prs --author=@me --state=open
+  对每个 PR: 检查 CI、review、合并状态
+  CI 失败 → 修复并推送
+  PR 合并/关闭 → 记录
+
+Step 2: 如果没有活跃任务，找新项目测试
+  语言轮换: JS → Python → Go → Rust → TS
+  条件: stars 50-1000, 有 CI, 最近更新, 有 open issues
+
+Step 3: 按 auto-pr-workflow skill 执行
+  深度分析 → 制定策略 → 修复 → 提交 PR → 记录
+
+Step 4: 更新 skill
+  发现新坑点 → 更新 SKILL.md → 同步到 GitHub
+
+Step 5: 汇报（仅重大事件）
+  PR 合并 ✅ / PR 拒绝 ❌ / CI 连续 3 次失败 ⚠️ → 发消息
+  否则静默
+"
+```
+
+### 通知策略
+
+| 事件 | 动作 |
+|------|------|
+| PR 被合并 | ✅ 通知用户 |
+| PR 被关闭/拒绝 | ❌ 通知原因 |
+| CI 连续 3 次修复失败 | ⚠️ 请求帮助 |
+| 完成一批测试 | 🎯 汇总通知 |
+| 其他（分析、提交、记录） | 🔇 静默执行 |
 
 ## 测试记录
 
