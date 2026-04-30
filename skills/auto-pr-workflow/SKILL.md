@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 3.0.0
+version: 3.1.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -22,6 +22,43 @@ metadata:
 Agent 是大脑（分析、决策、判断、执行）
 工具是基础设施（gh、git、Claude Code）
 ```
+
+## 核心原则（Agent 永远记住）
+
+1. **先理解，再动手** — 不读完 README/CONTRIBUTING/CI 不写一行代码
+2. **最小修复** — 改动越小越容易被 merge，不要顺手重构
+3. **维护者视角** — 每个 PR 都在增加维护者的审查负担，你的 PR 必须值得
+4. **诚实透明** — PR 描述说清楚改了什么、为什么、怎么验证，不夸大
+5. **知道何时不 PR** — 项目明确拒绝 AI PR、没有真实痛点、改动有风险 → 停下来
+6. **合并率是唯一硬指标** — < 10% 就停止提交，先推已有 PR 合并
+
+## 红线：必须暂停并请求人类确认
+
+以下情况 Agent 不得自行决策，必须暂停等待人类确认：
+
+1. **项目明确禁止 AI PR** — CONTRIBUTING.md 或近期 Issues 有相关声明
+2. **涉及安全相关代码** — 加密、认证、权限校验
+3. **修改 CI/CD 配置** — 可能影响所有贡献者
+4. **删除他人代码** — 重构、移除功能
+5. **引入新依赖** — 增加维护负担
+6. **修改数据库迁移文件** — 不可逆操作
+7. **涉及法律敏感内容** — License、版权、专利
+
+**Phase 1 分析时必须检查这些红线。**
+
+## 信任梯度：像人类新手一样建立信任
+
+Agent 应该像一个有礼貌的新贡献者一样，渐进式建立信任：
+
+| 接触次数 | 贡献类型 | 风险 |
+|----------|---------|------|
+| 第一次 | 文档修复 / Typo 修正 | 零风险，建立存在感 |
+| 第二次 | 补充测试用例 | 低风险，展示技术能力 |
+| 第三次+ | 修复 Bug（有复现步骤） | 中风险，此时已有信任基础 |
+
+**PR 描述中诚实声明**：首次贡献时附加 "This is my first contribution to this project. Feedback welcome."
+
+**永远不要**：在第一次贡献时就提交代码逻辑改动。
 
 ## 工作流程
 
@@ -70,6 +107,35 @@ git log --oneline -20             # 最近的提交
 - 维护者风格是什么？（solo-maintained vs 社区驱动）
 - 什么是真正的痛点？（不是你以为的，是项目实际缺的）
 - **已有 PR 在解决什么问题？**（避免重复贡献，找别人没处理的 gap）
+
+#### 1.4 维护者友好度评估（决定是否 PR）
+
+在动手之前，必须评估目标项目对 AI 贡献的接受度：
+
+```bash
+# 检查 Issues 中是否有对 AI/bot 的负面态度
+gh issue list --limit 30 --search "AI OR bot OR automated OR spam" --state closed
+
+# 检查近期关闭的 PR 中是否有 AI 相关的被拒
+gh pr list --state closed --limit 20 --search "AI OR automated OR bot"
+
+# 检查 CONTRIBUTING.md 是否明确禁止
+grep -i "AI\|automated\|bot\|generated" CONTRIBUTING.md 2>/dev/null
+
+# 检查维护者数量（solo-maintained 更敏感）
+gh api repos/{owner}/{repo}/contributors --jq 'length'
+```
+
+**评分矩阵**：
+
+| 信号 | 友好度 | 策略 |
+|------|--------|------|
+| 近期有外部 AI PR 被 merge | ✅ 高 | 正常提交 |
+| 无 AI 相关声明，维护者活跃 | 🟡 中 | 首次只做 docs/typo |
+| Issues 中有反 bot 言论 | 🔴 低 | 只分析，不提交；或先开 Issue 讨论 |
+| CONTRIBUTING.md 明确禁止 | ⛔ 禁止 | 停止，不要尝试 |
+
+**如果友好度为 🟡 或 🔴**：遵循"信任梯度"策略，首次接触只做最低风险贡献。
 
 ### Phase 2: 制定策略（Agent 决策）
 
@@ -316,6 +382,30 @@ node --test test/      # 运行测试
 # 提交 PR（直接使用 gh CLI）
 # fork → branch → commit → push → gh pr create
 ```
+
+#### 3.6 PR 描述模板（强制使用）
+
+PR 描述是维护者第一眼看到的东西，必须高信息密度、低认知负荷：
+
+```
+## Summary
+[一句话说明改了什么，不超过 20 字]
+
+## Motivation
+[链接到具体 Issue，或描述复现步骤]
+
+## Changes
+- 具体改动 1
+- 具体改动 2
+
+## Verification
+[如何验证这个改动有效，提供命令或步骤]
+```
+
+**禁止写**：
+- "This PR improves performance"（没有数据支撑）
+- "Refactored for better readability"（主观判断）
+- "AI generated"（不需要主动说，但被问到要诚实回答）
 
 ### Phase 4: 监控与修复（Agent 循环）
 
