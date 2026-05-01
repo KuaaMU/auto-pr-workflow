@@ -4,18 +4,18 @@
 
 ## 统计
 
-- **总计**: 25 个 PR（外部项目）
-- **已合并**: 1 (4%)
-- **Open**: 24 (96%)
-- **Closed/Rejected**: 0
+- **总计**: 30 个 PR（外部项目）
+- **已合并**: 2 (6.7%)
+- **Open**: 25 (83.3%)
+- **Closed/Rejected**: 3 (10%)
 
 ## 语言分布
 
 | 语言 | 数量 |
 |------|------|
-| Go | 7 |
+| Go | 9 |
 | Rust | 6 |
-| TypeScript | 6 |
+| TypeScript | 7 |
 | C | 4 |
 | C++ | 2 |
 | Python | 2 |
@@ -25,7 +25,7 @@
 | # | 项目 | 语言 | PR | 描述 | 日期 | 状态 | 备注 |
 |---|------|------|-----|------|------|------|------|
 | 1 | mco | Python | [#83](https://github.com/mco-org/mco/pull/83) | fix: close stdout/stderr pipes in AcpTransport.close() | 2026-04 | 🟢 open | 首个 PR，自审抓 ValueError |
-| 2 | config-rs | Rust | [#751](https://github.com/rust-cli/config-rs/pull/751) | fix: sort MapAccess entries for deterministic iteration | 2026-04 | ⚠️ 待关闭 | 维护者批评应先讨论 |
+| 2 | config-rs | Rust | [#751](https://github.com/rust-cli/config-rs/pull/751) | fix: sort MapAccess entries for deterministic iteration | 2026-04 | ❌ closed | 维护者批评：应先讨论再 PR |
 | 3 | consola | TS | [#417](https://github.com/unjs/consola/pull/417) | fix: handle emoji sequences in stringWidth | 2026-04 | 🟢 open | CodeRabbit 暂停 review |
 | 4 | dingo | Go | [#86](https://github.com/i-love-flamingo/dingo/pull/86) | fix: detect circular singleton dependency | 2026-04 | 🟢 open | 自审抓 3 个 bug |
 | 5 | beelzebub | Go | [#302](https://github.com/beelzebub-labs/beelzebub/pull/302) | fix: context-based stop for data race | 2026-04 | 🟢 open | |
@@ -51,6 +51,9 @@
 | 25 | vpncloud | Rust | [#389](https://github.com/dswd/vpncloud/pull/389) | ci: modernize GitHub Actions | 2026-04-30 | 🟢 open | |
 | 26 | batch_invariant_ops | Python | [#22](https://github.com/thinking-machines-lab/batch_invariant_ops/pull/22) | fix: tooling config + CI lint workflow | 2026-04-30 | 🟢 open | |
 | 27 | clay | Go | [#351](https://github.com/chadbyte/clay/pull/351) | ci: run existing tests in CI | 2026-04-30 | 🟢 open | |
+| 29 | go-openapi/runtime | Go | [#422](https://github.com/go-openapi/runtime/pull/422) | fix: handle literal colons in URL paths | 2026-05-01 | 🟢 open | 262⭐, #352 |
+| 30 | rss-to-readme | TS | [#38](https://github.com/JasonEtco/rss-to-readme/pull/38) | fix: improve error messages for timeout/HTTP errors | 2026-05-01 | 🟢 open | 230⭐, #35+#34 |
+| 28 | kontext-cli | Go | [#88](https://github.com/kontext-security/kontext-cli/pull/88) | fix: heartbeat exponential backoff + log dedup | 2026-05-01 | ✅ merged | 180⭐, #38 首个Go合并！ |
 
 ## 教训汇总
 
@@ -69,6 +72,7 @@
 | obscura #73 | 浏览器 DOM API 缺失搜 globalThis.XXX = Node |
 | zerobrew #344 | 测试是真相来源，CHANGELOG 是意图线索 |
 | daily-api #3836 | git config user.name 必须匹配 GitHub 身份，否则 CLA 无法关联 |
+| config-rs #751 | 必须先开 Issue 讨论方案，再提交实现。不要用 AI PR 模板 |
 
 ---
 

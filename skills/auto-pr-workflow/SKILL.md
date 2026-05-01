@@ -1,7 +1,7 @@
 ---
 name: auto-pr-workflow
 description: "Agent 自主提交高质量 PR 的完整能力 — 深度分析项目 → 制定策略 → 调用 Claude Code → 监控 CI → 回应审查"
-version: 3.8.0
+version: 3.9.0
 author: KuaaMU
 license: MIT
 metadata:
@@ -449,8 +449,8 @@ gh pr checks <PR#> --repo <owner/repo>
 # CI 失败时，Agent 分析原因并修复
 gh run view <RUN_ID> --log-failed
 
-# 回应审查反馈
-gh pr view <PR#> --repo <owner/repo> --json reviews
+# 回应审查反馈 — 关键：同时检查 mergeStateStatus
+gh pr view <PR#> --repo <owner/repo> --json reviews,mergeable,mergeStateStatus
 
 # 检查 inline review comments（CodeRabbit、Copilot 等）
 gh api repos/<owner>/<repo>/pulls/<PR#>/comments --jq '.[] | {user: .user.login, body: .body[:200], path: .path}'
@@ -460,6 +460,27 @@ gh api repos/<owner>/<repo>/pulls/comments/<COMMENT_ID>/replies --method POST -f
 
 # 根据 review 修改代码，再次提交
 ```
+
+**mergeStateStatus 含义（必须检查）**：
+
+| mergeStateStatus | 含义 | 需要行动？ |
+|-----------------|------|-----------|
+| `CLEAN` | 所有检查通过，可合并 | ✅ 等维护者 merge |
+| `BLOCKED` | 有 required check 未通过 | ⚠️ 见下方分析 |
+| `BEHIND` | PR 分支落后于 base，需要 rebase | 🔄 `git rebase main && push` |
+| `CONFLICTING` | 有合并冲突 | 🔧 解决冲突（见 Phase 4.1） |
+| `UNKNOWN` | GitHub 还在计算状态 | ⏳ 等几分钟再查 |
+
+**BLOCKED 但 APPROVED 的特殊情况**：
+
+当 `reviewDecision: APPROVED` 但 `mergeStateStatus: BLOCKED` 时，通常是 required deployment check 失败（Vercel、Netlify 等）。这是 fork PR 的预期行为——部署服务不授权 fork PR。
+
+```bash
+# 诊断：检查哪些 required check 失败
+gh pr checks <PR#> --repo <owner/repo> | grep -E "fail|action_required"
+```
+
+**案例（PostHog/posthog-js #3508）**：APPROVED by maintainer，但 Vercel deployment check 持续 BLOCKED。维护者可以用 admin override 合并，或调整 branch protection。无需 contributor 行动。
 
 #### 4.1 合并冲突解决（PR 变成 CONFLICTING 时）
 
@@ -927,6 +948,19 @@ toolsets: ["file", "terminal"]
 - 根据反馈更新代码或配置
 - 保持与项目现有风格一致
 
+**重要：先检查是否已修复再动手**
+
+CodeRabbit 的 inline comments 是针对 diff 的快照。如果你在第一轮修复后又 push 了新 commit，CodeRabbit 的评论可能已经过时。
+
+**案例（consola #417）**：CodeRabbit 提了 5 条 inline comments（tag-sequence overcount、variation selectors、keycap emoji 等）。子 agent 克隆代码后发现所有问题在之前的 commit 中已经修复，只需要补充测试覆盖和回复评论。
+
+**流程**：
+1. 读取所有 CodeRabbit comments
+2. 检查当前代码是否已经修复了每个问题
+3. 如果已修复 → 只补充测试 + 回复评论说明
+4. 如果未修复 → 修复代码 + 回复评论
+5. 不要重复修复已经解决的问题
+
 ### 7b. Copilot 审查回应策略
 
 **问题**：GitHub Copilot 提出行内审查意见，需要回应
@@ -1288,7 +1322,52 @@ gh api repos/<owner>/<repo>/actions/jobs/<JOB_ID>/logs 2>&1 | grep -B5 -A10 "exi
 
 **案例（rikaikun #2978）**：`--log-failed` 返回空，但 `gh api .../logs | grep error` 找到了 `AssertionError: expected '可爱...' to match /猫/`。
 
-### 16. Open PR 积压管理
+### 15b. PR 统计必须排除自有仓库
+
+**问题**：统计 open PR 数量或分类 PR 状态时，把用户自己的仓库（如 `KuaaMU/omnihive`、`KuaaMU/auto-pr-workflow`）也算作外部贡献。
+
+**后果**：PR 计数虚高（如显示 25 个 open PR 实际只有 23 个外部），合并率计算失真，PR-LOG 记录不准确。
+
+**解决**：所有 PR 统计和分类必须先过滤掉用户的自有仓库：
+```python
+own_repos = {"KuaaMU/omnihive", "KuaaMU/auto-pr-workflow", "KuaaMU/clay"}
+external = [pr for pr in all_prs if pr['repository']['nameWithOwner'] not in own_repos]
+```
+
+**通用规则**：在任何 PR 审计、状态报告、PR-LOG 更新中，先识别并排除自有仓库。自有仓库的 PR（如 omnihive #8）属于内部开发，不是外部贡献。
+
+**案例（2026-05-01）**：用户纠正——"你要确定24个pr都是本项目做的吗，不要包括omnihive"。实际外部 PR 是 23 个，omnihive #8 是自有项目。
+
+### 16. 并发 PR 提交（Parallel PR Submission）
+
+**问题**：逐个提交 PR 效率低，每个 PR 需要分析 + 编码 + 自审 + 提交，串行执行耗时长。
+
+**解决**：用 `delegate_task` 并发提交多个 PR。先快速筛选项目，再并行委派。
+
+**执行流程**：
+1. 快速扫描 3-5 个候选项目（issue 详情 + CONTRIBUTING + CI 配置）
+2. 选出 2-3 个适合的项目
+3. 一次性 `delegate_task` 委派所有 PR 任务（每个任务独立 context）
+4. 验证结果：`gh pr view` 确认每个 PR 存在且 MERGEABLE
+5. 更新 PR-LOG
+
+**每个委派任务的 context 必须包含**：
+- 项目名和 issue 号
+- 语言和工具链要求
+- `git config user.name/email` 和 proxy 设置
+- "先读 CONTRIBUTING.md"
+- 明确的修复方案（不要让子 agent 自己找 bug）
+
+**案例（2026-05-01）**：并发提交 3 个 PR（kontext-cli Go、runtime Go、rss-to-readme TS），全部成功创建。其中 1 个子 agent 超时但代码已完成，主 agent 补完了 commit/push/PR 创建。
+
+**子 agent 超时的处理**：
+- 子 agent max_iterations 超时时，代码可能已经写好但未 commit/push
+- 检查 `git status` 和 `git diff` 看改动是否完整
+- 如果改动完整：直接 `git add + commit + push + gh pr create` 完成提交
+- 如果改动不完整：手动补完缺失部分再提交
+- **不要重新运行子 agent** — 它的工作成果在磁盘上，直接用
+
+### 17. Open PR 积压管理
 
 **问题**：持续创建新 PR 导致 open PR 数量过多，维护者审查负担大，自身监控成本高。
 
@@ -1328,8 +1407,8 @@ for pr in "owner1/repo1:123" "owner2/repo2:456"; do
   repo=$(echo $pr | cut -d: -f1)
   num=$(echo $pr | cut -d: -f2)
   echo "=== $repo #$num ==="
-  gh pr view $num --repo $repo --json reviews,comments,mergeable \
-    --jq '{reviews: [.reviews[] | {author: .author.login, state: .state}], comment_count: (.comments | length), mergeable: .mergeable}'
+  gh pr view $num --repo $repo --json reviews,comments,mergeable,mergeStateStatus,reviewDecision \
+    --jq '{reviews: [.reviews[] | {author: .author.login, state: .state}], comment_count: (.comments | length), mergeable: .mergeable, mergeState: .mergeStateStatus, reviewDecision: .reviewDecision}'
   echo ""
 done
 ```
@@ -1394,6 +1473,29 @@ git config user.name && git config user.email
 # 如果是系统默认值（ubuntu, root 等）→ 需要修正后再提交
 ```
 
+### 17b2. DCO（Developer Certificate of Origin）签章
+
+**问题**：项目要求 commit 有 DCO sign-off（`Signed-off-by` 行），但你用了普通 `git commit`。
+
+**识别**：检查 AGENTS.md 或 CONTRIBUTING.md 是否提到：
+- `git commit -s`
+- DCO
+- `Signed-off-by`
+- `probot/dco` 或 `dco.yml`
+
+**案例（go-openapi/runtime）**：AGENTS.md 明确要求 `git commit -s`（DCO sign-off）。如果用普通 commit，CI 会失败。
+
+**解决**：
+```bash
+# 已有 commit 加 sign-off
+git commit --amend -s
+
+# 或新 commit 加 -s
+git commit -s -m "fix: your message"
+```
+
+**预防**：Phase 1 分析时检查 AGENTS.md 的 Conventions 节。DCO 和 CLA 是两个不同的东西——CLA 是法律协议，DCO 是 commit 元数据。
+
 ### 17c. Fork PR 的预期 CI 行为
 
 **不是所有 CI 失败都需要修复。** Fork PR 有一些预期的"失败"：
@@ -1405,6 +1507,7 @@ git config user.name && git config user.email
 | CLA assistant | `not signed` | CLA 未签名 | ⚠️ 需要签名或修复 git 身份 |
 | `no checks reported` | CI 未触发 | 项目 CI 只有 `pull_request` trigger | ❌ 不需要，等维护者 review |
 | `gitleaks` | `fail` | 可能是 org 级别配置问题 | ❌ 如果其他 PR 也失败则是预存在的问题 |
+| Vercel/Netlify + `BLOCKED` | `mergeStateStatus: BLOCKED` 但 `reviewDecision: APPROVED` | Required deployment check 失败 | ❌ 维护者可用 admin override 合并 |
 
 **判断方法**：
 ```bash
@@ -1652,5 +1755,6 @@ Step 5: 汇报（仅重大事件）
 - [GitHub CLI 坑点](references/gh-cli-quirks.md)
 - [Rust Clippy 修复模式](references/rust-clippy-patterns.md)
 - [批量 PR 检查模式](references/batch-pr-check-pattern.md)
+- [Go Heartbeat Backoff 模式](references/go-heartbeat-backoff-pattern.md)
 - [项目主页](https://github.com/KuaaMU/auto-pr-workflow)
 - [项目主页](https://github.com/KuaaMU/auto-pr-workflow)
