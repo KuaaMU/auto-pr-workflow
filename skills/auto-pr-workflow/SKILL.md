@@ -1675,12 +1675,46 @@ git -c http.proxy="" -c https.proxy="" push origin fix/my-branch:fix/my-branch -
 hermes delegate_task --goal "分析项目 X，提交一个有价值的 PR" \
   --context "使用 auto-pr-workflow skill 的方法论"
 
+# 并发执行：同时提交多个 PR（推荐 2-3 个，不要超过 3 个避免质量下降）
+hermes delegate_task --role orchestrator --tasks '[
+  {"goal": "提交 PR 到 projectA", "toolsets": ["terminal","file"]},
+  {"goal": "提交 PR 到 projectB", "toolsets": ["terminal","file"]}
+]'
+
 # 持续执行：自主循环测试（详见「自主循环测试」章节）
 hermes cronjob create --schedule "every 1h" \
   --name "auto-pr-workflow 循环测试" \
   --skill auto-pr-workflow --deliver local \
   --prompt "检查现有 PR → 找新项目 → 执行 → 更新 skill → 仅重大事件通知"
 ```
+
+### 并发 PR 提交
+
+**适用场景**：已有明确目标项目和 issue，多个任务之间无依赖。
+
+**流程**：
+1. 先串行分析候选项目（5-10 分钟），选定 2-3 个目标
+2. 每个任务的 context 必须包含：项目语言、CONTRIBUTING 要求、issue 内容、git config 命令
+3. 用 `delegate_task --role orchestrator` 并发执行
+4. 每个子 agent 独立完成：fork → clone → 分析 → 编码 → 自审 → 提交 PR
+5. 主 agent 验证所有 PR 状态，更新 PR-LOG
+
+**案例（2026-05-01）**：并发提交 3 个 PR（kontext-cli Go, runtime Go, rss-to-readme TS），全部成功。kontext-cli 当天合并。
+
+**注意事项**：
+- 不要超过 3 个并发——子 agent 会争用 terminal 资源
+- 每个任务必须独立设置 git config（子 agent 不共享环境）
+- 子 agent 可能超时（max_iterations）——主 agent 需要检查并补完未完成的 push/PR 创建
+- PR-LOG 更新放在所有子任务完成后统一做
+
+**子 agent 超时补完流程**：
+1. 检查子 agent 的 summary，看它完成了什么
+2. `cd` 到工作目录，`git log --oneline -3` 检查是否已 commit
+3. 如果已 commit 但未 push：手动 `git push fork branch-name`
+4. 如果已 push 但未创建 PR：手动 `gh pr create`
+5. 如果未 commit：检查 `git diff` 看代码改动是否还在
+
+**案例（2026-05-01 runtime #422）**：子 agent 完成了代码修改和测试，但因 max_iterations 超时，没有 commit/push。主 agent 检查发现 `git diff` 有改动，手动 commit + push + 创建 PR，成功。
 
 ## 自主循环测试（Continuous Testing Loop）
 
@@ -1755,6 +1789,6 @@ Step 5: 汇报（仅重大事件）
 - [GitHub CLI 坑点](references/gh-cli-quirks.md)
 - [Rust Clippy 修复模式](references/rust-clippy-patterns.md)
 - [批量 PR 检查模式](references/batch-pr-check-pattern.md)
-- [Go Heartbeat Backoff 模式](references/go-heartbeat-backoff-pattern.md)
+- [Kimi 设计分析](references/kimi-analysis-2026-05.md)
 - [项目主页](https://github.com/KuaaMU/auto-pr-workflow)
 - [项目主页](https://github.com/KuaaMU/auto-pr-workflow)
