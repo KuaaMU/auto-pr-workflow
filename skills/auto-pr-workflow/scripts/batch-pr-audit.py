@@ -139,32 +139,32 @@ def detect_merges():
         
         if key in open_in_log:
             # PR was open in log but now closed — check if merged or rejected
-            # Note: Some repos use squash merge which may not set mergedAt
-            detail_out, _, detail_rc = run(f'gh pr view {num} --repo {repo} --json mergedAt,state,commits 2>/dev/null')
-            if detail_rc == 0 and detail_out:
+            # Use API events endpoint for reliable merge detection (handles squash merge)
+            events_out, _, events_rc = run(f'gh api repos/{repo}/issues/{num}/events 2>/dev/null')
+            if events_rc == 0 and events_out:
                 try:
-                    detail = json.loads(detail_out)
-                    is_merged = bool(detail.get('mergedAt'))
+                    pr_events = json.loads(events_out)
+                    merged_events = [e for e in pr_events if e.get('event') == 'merged']
+                    closed_events = [e for e in pr_events if e.get('event') == 'closed']
                     
-                    # Fallback: check if commit exists in main branch (squash merge detection)
-                    if not is_merged and detail.get('commits'):
-                        commit_sha = detail['commits'][0].get('oid', '')
-                        if commit_sha:
-                            # Check if this commit is reachable from main
-                            check_out, _, check_rc = run(f'git -C /tmp/openzl-check log --oneline 2>/dev/null | grep -q {commit_sha[:7]} && echo "found"')
-                            if 'found' in check_out:
-                                is_merged = True
-                    
-                    if is_merged:
+                    if merged_events:
                         events.append({
                             "type": "newly_merged", "priority": "high",
                             "msg": f"✅ {repo} #{num} 已合并！({title}) — 需要更新 PR-LOG"
                         })
-                    else:
-                        events.append({
-                            "type": "newly_closed", "priority": "high",
-                            "msg": f"❌ {repo} #{num} 已关闭/拒绝 ({title}) — 需要更新 PR-LOG"
-                        })
+                    elif closed_events:
+                        close_event = closed_events[0]
+                        commit_id = close_event.get('commit_id', '')
+                        if commit_id:
+                            events.append({
+                                "type": "newly_merged", "priority": "high",
+                                "msg": f"✅ {repo} #{num} 已合并（squash）！({title}) — 需要更新 PR-LOG"
+                            })
+                        else:
+                            events.append({
+                                "type": "newly_closed", "priority": "high",
+                                "msg": f"❌ {repo} #{num} 已关闭/拒绝 ({title}) — 需要更新 PR-LOG"
+                            })
                 except:
                     pass
     
