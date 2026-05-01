@@ -7,6 +7,8 @@
 ### `gh search prs` does NOT support:
 - `mergedAt` — returns empty stdout + stderr error, silently fails
 - Use `closedAt` instead for search results
+- `--state merged` — INVALID flag value, only `open|closed` are valid
+- Use `--merged` as a standalone flag instead: `gh search prs --author @me --merged`
 
 ### Verified workflow for PR status checking:
 
@@ -60,3 +62,84 @@ gh api repos/OWNER/REPO/pulls -X POST --field title="..." --field body='...' --f
 ```
 
 **Or** escape backticks with backslash: `\`file.ts\``
+
+## GitHub Projects (classic) deprecation
+
+**Problem**: `gh pr view` and `gh issue view` fail with:
+```
+GraphQL: Projects (classic) is being deprecated in favor of the new Projects experience
+```
+
+**Cause**: The repo still references deprecated GitHub Projects (classic) in its PR/issue metadata.
+
+**Workaround**: Use `gh api` directly instead:
+```bash
+# Instead of:
+gh issue view 190 --repo melink14/rikaikun
+
+# Use:
+gh api repos/melink14/rikaikun/issues/190 | jq '{title, body: .body[:500], labels: [.labels[].name]}'
+```
+
+This bypasses the GraphQL field that triggers the deprecation error.
+
+## `--jq` complex templates silently produce literal text
+
+**Problem**: `gh pr view --json reviews --jq '{reviews: [.reviews[] | {author: .author.login, state: .state}]}'` outputs the literal jq template text `{reviews: [.reviews[] | ...]}` instead of evaluated JSON.
+
+**Root cause**: Bash brace expansion and quoting interact badly with jq's `{}` syntax. Even with double-quotes, nested braces/brackets get mangled.
+
+**Symptoms**: Output looks like `{author}: {body[:300]}` — literal template, not data.
+
+**Solution — parse raw JSON in code instead of complex --jq**:
+```bash
+# ❌ Breaks silently
+gh pr view $NUM --repo $REPO --json reviews,comments --jq '{reviews: [.reviews[] | {author: .author.login}]}'
+
+# ✅ Get raw JSON, parse in Python/Node
+gh pr view $NUM --repo $REPO --json reviews,comments
+# Then parse the JSON output in your script
+```
+
+**Simple --jq filters still work**: `.reviews | length`, `.[].title`, single-level projections.
+**Rule of thumb**: If the --jq template has nested `{}` or `[]` iteration, get raw JSON instead.
+
+## Fetching fork PR branch for local fix
+
+**Problem**: Need to locally fix a fork PR (e.g., amend commit author for CLA). The PR branch exists on the fork, not upstream.
+
+**Correct pattern**:
+```bash
+# Clone YOUR fork (not upstream)
+git clone https://github.com/YOUR_USER/REPO.git
+cd REPO
+
+# Fetch the PR from UPSTREAM (where the PR was opened)
+git remote add upstream https://github.com/UPSTREAM/REPO.git
+git fetch upstream refs/pull/{NUM}/head:pr-{NUM}
+git checkout pr-{NUM}
+
+# Fix, amend, force-push to YOUR fork's branch
+git commit --amend --author="YourName <noreply@github.com>" --no-edit
+git push origin pr-{NUM}:{branch-name} --force
+```
+
+**Common mistake**: Trying `git fetch origin refs/pull/{NUM}/head` on the fork — this ref only exists on the upstream repo.
+
+## CLA fix: commit author mismatch
+
+**Problem**: CLA bot shows "not signed" even after signing. Root cause is commit author is system default (e.g., `Ubuntu <ubuntu@localhost.localdomain>`).
+
+**Diagnosis**:
+```bash
+gh pr view {NUM} --repo {OWNER/REPO} --json commits --jq '.commits[] | {oid: .oid[:8], author: .authors[0]}'
+# If author shows ubuntu/root/system default → mismatch
+```
+
+**Fix** (see "Fetching fork PR branch" above for full flow):
+```bash
+git commit --amend --author="GitHubUsername <ID+username@users.noreply.github.com>" --no-edit
+git push origin pr-{NUM}:{branch} --force
+```
+
+**Verification**: `gh pr checks {NUM} --repo {OWNER/REPO}` — CLA should go from `pending` to `pass` within seconds.
