@@ -6,18 +6,18 @@
 
 - **总计**: 30 个 PR（外部项目）
 - **总计**: 32 个 PR（外部项目）
-- **总计**: 37 个 PR（外部项目）
-- **已合并**: 8 (21.6%)
-- **Open**: 23 (62.2%)
-- **Closed/Rejected**: 5 (13.5%)
+- **总计**: 40 个 PR（外部项目）
+- **已合并**: 8 (20.0%)
+- **Open**: 26 (65.0%)
+- **Closed/Rejected**: 6 (15.0%)
 
 ## 语言分布
 
 | 语言 | 数量 |
 |------|------|
 | Go | 9 |
-| Rust | 6 |
-| TypeScript | 7 |
+| Rust | 7 |
+| TypeScript | 8 |
 | C | 4 |
 | C++ | 2 |
 | Python | 2 |
@@ -61,7 +61,9 @@
 | 33 | dali2mqtt | Python | [#72](https://github.com/dgomes/dali2mqtt/pull/72) | test: expand test coverage for lamp and devicesnamesconfig | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock |
 | 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | 🟢 open | #64 修复, 真实逻辑测试 |
 | 35 | wrpc | Rust | [#1170](https://github.com/bytecodealliance/wrpc/pull/1170) | docs: add Unix Domain Socket transport example | 2026-05-02 | ✅ merged | 第7个合并！ByteCode Alliance |
-| 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | #1574, good first issue |
+|| 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | #1574, good first issue |
+|| 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | ⚠️ changes_requested | 维护者要求简化为 inline 示例 |
+|| 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | 🟢 open | ⭐51K, CLA ✅ |
 
 ## 教训汇总
 | dali2mqtt #72 | 测试必须验证真实逻辑而非 Mock 行为；generator fixture 耗尽导致级联失败 |
@@ -85,4 +87,4 @@
 
 ---
 
-*最后更新: 2026-05-02 (openzl #702 confirmed merged via squash, 8 total merged)*
+*最后更新: 2026-05-02 06:20 UTC (astro-og-canvas #172 replied to maintainer, warp #9849/#9833 CLA fixed, 40 PRs total)*
