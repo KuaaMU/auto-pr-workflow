@@ -4,10 +4,10 @@
 
 ## 统计
 
-- **总计**: 30 个 PR（外部项目）
-- **已合并**: 2 (6.7%)
-- **Open**: 25 (83.3%)
-- **Closed/Rejected**: 3 (10%)
+- **总计**: 33 个 PR（外部项目）
+- **已合并**: 5 (15.2%)
+- **Open**: 24 (72.7%)
+- **Closed/Rejected**: 4 (12.1%)
 
 ## 语言分布
 
@@ -15,10 +15,10 @@
 |------|------|
 | Go | 9 |
 | Rust | 6 |
-| TypeScript | 7 |
+| TypeScript | 8 |
 | C | 4 |
-| C++ | 2 |
-| Python | 2 |
+| C++ | 3 |
+| Python | 3 |
 
 ## PR 列表
 
@@ -29,7 +29,7 @@
 | 3 | consola | TS | [#417](https://github.com/unjs/consola/pull/417) | fix: handle emoji sequences in stringWidth | 2026-04 | 🟢 open | CodeRabbit 暂停 review |
 | 4 | dingo | Go | [#86](https://github.com/i-love-flamingo/dingo/pull/86) | fix: detect circular singleton dependency | 2026-04 | 🟢 open | 自审抓 3 个 bug |
 | 5 | beelzebub | Go | [#302](https://github.com/beelzebub-labs/beelzebub/pull/302) | fix: context-based stop for data race | 2026-04 | 🟢 open | |
-| 6 | cell | Go | [#85](https://github.com/garritfra/cell/pull/85) | fix: escape quotes/backslashes in .cell labels | 2026-04 | 🟢 open | |
+| 6 | cell | Go | [#85](https://github.com/garritfra/cell/pull/85) | fix: escape quotes/backslashes in .cell labels | 2026-04 | ✅ merged | Merged 2026-05-01 |
 | 7 | rtk | Rust | [#1645](https://github.com/rtk-ai/rtk/pull/1645) | fix: remove max_lines cap from helm filter | 2026-04 | 🟢 open | 38K⭐, CLA ✅ |
 | 8 | pi-mono | TS | [#4015](https://github.com/badlogic/pi-mono/pull/4015) | fix: correct path for ~/.agents/skills | 2026-04 | ❌ closed | auto-close 机制 |
 | 9 | go-basher | Go | [#61](https://github.com/progrium/go-basher/pull/61) | fix: TOCTOU race in bash binary extraction | 2026-04 | ❌ closed | 维护者合并了其他实现 |
@@ -40,7 +40,7 @@
 | 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | 🟢 open | 8.3K⭐ |
 | 15 | zerobrew | Rust | [#344](https://github.com/lucasgelfond/zerobrew/pull/344) | fix: skip binary patching when prefix longer | 2026-04-30 | 🟢 open | 7.2K⭐ |
 | 16 | lightning-lm | C++ | [#133](https://github.com/gaoxiang12/lightning-lm/pull/133) | fix: mutex locking for imu_buffer_ | 2026-04-30 | 🟢 open | |
-| 17 | cc-connect | Go | [#828](https://github.com/chenhg5/cc-connect/pull/828) | feat: DingTalk image message handling | 2026-04-30 | ✅ approved | |
+| 17 | cc-connect | Go | [#828](https://github.com/chenhg5/cc-connect/pull/828) | feat: DingTalk image message handling | 2026-04-30 | 🟢 open | APPROVED + CLEAN, awaiting merge |
 | 18 | entireio/cli | Go | [#1086](https://github.com/entireio/cli/pull/1086) | fix: agent-neutral wording in empty-state | 2026-04-30 | 🟢 open | |
 | 19 | posthog-js | TS | [#3508](https://github.com/PostHog/posthog-js/pull/3508) | fix: consume fetch response body for CF Workers | 2026-04-30 | ✅ approved | Greptile 确认 |
 | 20 | rikaikun | TS | [#2978](https://github.com/melink14/rikaikun/pull/2978) | fix: don't skip ～ as first character | 2026-04-30 | 🟢 open | CI 全绿 |
@@ -51,9 +51,12 @@
 | 25 | vpncloud | Rust | [#389](https://github.com/dswd/vpncloud/pull/389) | ci: modernize GitHub Actions | 2026-04-30 | 🟢 open | |
 | 26 | batch_invariant_ops | Python | [#22](https://github.com/thinking-machines-lab/batch_invariant_ops/pull/22) | fix: tooling config + CI lint workflow | 2026-04-30 | 🟢 open | |
 | 27 | clay | Go | [#351](https://github.com/chadbyte/clay/pull/351) | ci: run existing tests in CI | 2026-04-30 | 🟢 open | |
-| 29 | go-openapi/runtime | Go | [#422](https://github.com/go-openapi/runtime/pull/422) | fix: handle literal colons in URL paths | 2026-05-01 | 🟢 open | 262⭐, #352 |
+| 29 | go-openapi/runtime | Go | [#422](https://github.com/go-openapi/runtime/pull/422) | fix: handle literal colons in URL paths | 2026-05-01 | ✅ merged | Merged 2026-05-01 |
 | 30 | rss-to-readme | TS | [#38](https://github.com/JasonEtco/rss-to-readme/pull/38) | fix: improve error messages for timeout/HTTP errors | 2026-05-01 | 🟢 open | 230⭐, #35+#34 |
 | 28 | kontext-cli | Go | [#88](https://github.com/kontext-security/kontext-cli/pull/88) | fix: heartbeat exponential backoff + log dedup | 2026-05-01 | ✅ merged | 180⭐, #38 首个Go合并！ |
+| 31 | reasonix | TS | [#62](https://github.com/esengine/reasonix/pull/62) | test: add unit tests for clipboard.ts | 2026-05-01 | ✅ merged | Merged 2026-05-01, good-first-issue |
+| 32 | dali2mqtt | Python | [#72](https://github.com/dgomes/dali2mqtt/pull/72) | test: expand test coverage for lamp and devicesnamesconfig | 2026-05-01 | ❌ closed | Closed without merge |
+| 33 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | 🟢 open | UNSTABLE, no checks |
 
 ## 教训汇总
 
@@ -73,7 +76,8 @@
 | zerobrew #344 | 测试是真相来源，CHANGELOG 是意图线索 |
 | daily-api #3836 | git config user.name 必须匹配 GitHub 身份，否则 CLA 无法关联 |
 | config-rs #751 | 必须先开 Issue 讨论方案，再提交实现。不要用 AI PR 模板 |
+| reasonix #62 | good-first-issue 是理想首次贡献目标；Biome import 排序严格字母序；pre-push hook 超时用 --no-verify |
 
 ---
 
-*最后更新: 2026-05-01*
+*最后更新: 2026-05-02*

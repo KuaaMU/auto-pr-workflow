@@ -47,12 +47,21 @@ else if (c == 0xff5e && i > 0) {
 - **Time**: ~15 minutes (clone, analyze, fix, commit, push, create PR)
 - **Issues**: npm install timed out (network), could not run tests locally
 
+## CI Issues & Fixes
+
+### Issue 1: Test assertion error (2026-05-01)
+- **Symptom**: `AssertionError: expected '可愛い [かわーい] ...' to match /猫/`
+- **Root Cause**: Test input is `～可愛い` but assertion expected `/猫/`. The translate function looks up `～可愛い`, skips `～` (not in dictionary), and returns `可愛い`. The assertion should match `/可愛/`, not `/猫/`.
+- **Fix**: Changed assertion from `/猫/` to `/可愛/`
+- **Commit**: `253cb34`
+
 ## Learnings
 1. **Shallow clone works for timeout-prone repos**: `git clone --depth 1` succeeded when full clone timed out
 2. **Backticks in gh pr create --body cause bash parsing errors**: Use `gh api` to update PR body instead
 3. **Projects (classic) deprecation**: Some repos still reference deprecated GitHub Projects, causing GraphQL errors with `gh pr view`
+4. **Test assertions must match actual input**: When changing test input (from `translate('～')` to `translate('～可愛い')`), the assertion must be updated to match what `translate('～可愛い')` actually returns, not what `translate('～猫')` would return.
 
 ## Status
-- [ ] CI passing
+- [x] CI passing (fixed test assertion 2026-05-01)
 - [ ] Review received
 - [ ] Merged
