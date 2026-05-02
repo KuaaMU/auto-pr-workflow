@@ -64,16 +64,33 @@ hermes skills install https://raw.githubusercontent.com/KuaaMU/auto-pr-workflow/
 auto-pr-workflow/
 ├── skills/
 │   └── auto-pr-workflow/
-│       ├── SKILL.md              # 核心方法论（v3.1.0）
-│       └── templates/            # CodeRabbit、PR 模板等
-├── anti-patterns/                # 14 个失败模式（从真实 PR 中提取）
-│   └── README.md
-├── projects-registry.yml         # 项目画像注册表（哪些项目接受 AI PR）
-├── templates/
-│   └── review-template.yaml      # 结构化复盘模板
+│       ├── SKILL.md              # 核心方法论（v3.12.0）
+│       ├── PR-LOG.md             # PR 提交记录
+│       ├── scripts/
+│       │   └── batch-pr-audit.py # 批量 PR 审计脚本
+│       └── references/           # 详细文档
+│           ├── anti-patterns.md  # 20+ 失败模式
+│           ├── gh-cli-quirks.md  # GitHub CLI 坑点
+│           ├── rust-clippy-patterns.md
+│           └── ...
 ├── test-records/                 # 案例库
 └── README.md
 ```
+
+## 批量 PR 审计
+
+内置 `batch-pr-audit.py` 脚本，自动监控所有 open PR：
+
+```bash
+python3 scripts/batch-pr-audit.py
+```
+
+功能：
+- 扫描所有 open PR，检查 CI、review、mergeable 状态
+- 检测新合并/关闭的 PR（支持 squash merge）
+- 按优先级分类事件（critical → high → medium）
+- 计算合并率，低于 10% 时报警
+- 输出结构化报告供 Agent 决策
 
 ## 战略原则
 
@@ -85,22 +102,49 @@ auto-pr-workflow/
 | 10-30% | 放慢节奏，增加跟踪频率 |
 | > 30% | 可以继续提交 |
 
-## 真实案例（27 个 PR）
+## 实战统计（37 个 PR）
 
 | 状态 | 数量 | 比例 |
 |------|------|------|
-| ✅ Merged | 1 | 3.7% |
-| 🟢 Open | 23 | 85.2% |
-| 🔴 Closed | 3 | 11.1% |
+| ✅ Merged | 8 | 21.6% |
+| 🟢 Open | 23 | 62.2% |
+| ❌ Closed | 6 | 16.2% |
 
-| 日期 | 项目 | 语言 | 结果 |
-|------|------|------|------|
-| 2026-04-30 | [tod-org/tod](https://github.com/tod-org/tod) | Rust | ✅ Merged |
-| 2026-04-30 | [PostHog/posthog-js](https://github.com/PostHog/posthog-js) | TS | 🟢 Review positive |
-| 2026-04-30 | [rtk-ai/rtk](https://github.com/rtk-ai/rtk) | — | 🟢 CLA signed |
-| 2026-04-30 | [progrium/go-basher](https://github.com/progrium/go-basher) | Go | 🔴 Maintainer merged different impl |
+### 已合并的 PR
 
-**详细记录**：[test-records/](./test-records/)　|　**失败模式**：[anti-patterns/](./anti-patterns/)
+| 项目 | PR | 描述 | 语言 |
+|------|-----|------|------|
+| tod-org/tod | #1577 | once_cell → std::sync::LazyLock | Rust |
+| kontext-security/kontext-cli | #88 | heartbeat exponential backoff | Go |
+| go-openapi/runtime | #422 | literal colons in URL paths | Go |
+| esengine/reasonix | #62 | unit tests for clipboard.ts | TS |
+| garritfra/cell | #85 | escape quotes/backslashes | Go |
+| entireio/cli | #1086 | agent-neutral wording | Go |
+| bytecodealliance/wrpc | #1170 | Unix Domain Socket transport | Rust |
+| facebook/openzl | #702 | ZL_free instead of free | C |
+
+### 语言分布
+
+| 语言 | 数量 |
+|------|------|
+| Go | 9 |
+| TypeScript | 7 |
+| Rust | 6 |
+| C | 4 |
+| C++ | 2 |
+| Python | 2 |
+
+**详细记录**：[PR-LOG.md](./skills/auto-pr-workflow/PR-LOG.md)　|　**案例库**：[test-records/](./test-records/)
+
+## 关键教训
+
+| 教训 | 来源 |
+|------|------|
+| 必须先开 Issue 讨论再提交实现 | config-rs #751 |
+| 测试必须验证真实逻辑而非 Mock 行为 | dali2mqtt #72 |
+| Fork PR 必须从干净 upstream 分支创建 | rtk #1645 |
+| 自审必须覆盖错误路径和并发场景 | dingo #86 |
+| squash merge 不一定设置 mergedAt | openzl #702 |
 
 ## 与竞品的区别
 
