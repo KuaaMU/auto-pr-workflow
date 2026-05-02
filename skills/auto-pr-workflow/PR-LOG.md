@@ -5,9 +5,9 @@
 ## 统计
 
 - **总计**: 39 个 PR（外部项目）
-- **已合并**: 9 (23.1%)
-- **Open**: 24 (61.5%)
-- **Closed/Rejected**: 6 (15.4%)
+- **已合并**: 8 (20.5%)
+- **Open**: 27 (69.2%)
+- **Closed/Rejected**: 4 (10.3%)
 
 ## 语言分布
 
@@ -57,7 +57,7 @@
 | 31 | reasonix | TS | [#62](https://github.com/esengine/reasonix/pull/62) | test: add unit tests for clipboard.ts | 2026-05-01 | ✅ merged | 第4个合并！ |
 | 32 | warp | Rust | [#9833](https://github.com/warpdotdev/warp/pull/9833) | feat: add Hermes CLI agent detection | 2026-05-01 | 🟢 open | ⭐51K |
 | 33 | dali2mqtt | Python | [#72](https://github.com/dgomes/dali2mqtt/pull/72) | test: expand test coverage for lamp and devicesnamesconfig | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock |
-| 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock，非真实逻辑 |
+| 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | 🟢 open | 维护者：测试在测 Mock，非真实逻辑 |
 | 35 | wrpc | Go | [#1170](https://github.com/bytecodealliance/wrpc/pull/1170) | docs: add Unix Domain Socket transport example | 2026-05-01 | ✅ merged | 第8个合并！ByteCode Alliance |
 | 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | #1574, good first issue |
 | 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | 🟢 open | 维护者要求简化为 inline 示例，已修复 |
@@ -85,4 +85,4 @@
 
 ---
 
-*最后更新: 2026-05-02 09:03 UTC (PR审计: 39 PRs, 7 merged 17.9%, 27 open, 5 closed)*
+*最后更新: 2026-05-02 11:17 UTC
