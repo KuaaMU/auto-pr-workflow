@@ -5,8 +5,8 @@
 ## 统计
 
 - **总计**: 41 个 PR（外部项目）
-- **已合并**: 8 (19.5%)
-- **Open**: 29 (70.7%)
+- **已合并**: 9 (22.0%)
+- **Open**: 28 (68.3%)
 - **Closed/Rejected**: 4 (9.8%)
 
 ## 语言分布
@@ -62,7 +62,7 @@
 | 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | 已修复 window.confirm 问题，等待维护者确认 |
 | 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | 🟢 open | 维护者要求简化为 inline 示例，已修复 |
 | 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | 🟢 open | ⭐51K, CLA ✅ |
-| 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | 🟢 open | |
+| 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | ✅ merged | 第9个合并！ |
 
 | 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | 🟢 open | good-first-issue #76 |
 | 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | 🟢 open | Oz review addressed: removed EditorView gate, using CLI_AGENT_RICH_INPUT_OPEN only |
