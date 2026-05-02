@@ -65,7 +65,7 @@
 | 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | 🟢 open | |
 
 | 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | 🟢 open | good-first-issue #76 |
-| 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | 🟢 open | Oz bot review: replace AIInput with flags::CLI_AGENT_RICH_INPUT_OPEN |
+| 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | 🟢 open | Oz review addressed: removed EditorView gate, using CLI_AGENT_RICH_INPUT_OPEN only |
 
 ## 教训汇总
 
