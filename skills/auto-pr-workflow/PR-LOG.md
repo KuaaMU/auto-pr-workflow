@@ -59,7 +59,7 @@
 | 33 | dali2mqtt | Python | [#72](https://github.com/dgomes/dali2mqtt/pull/72) | test: expand test coverage for lamp and devicesnamesconfig | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock |
 | 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | 🟢 open | 维护者：测试在测 Mock，非真实逻辑 |
 | 35 | wrpc | Go | [#1170](https://github.com/bytecodealliance/wrpc/pull/1170) | docs: add Unix Domain Socket transport example | 2026-05-01 | ✅ merged | 第8个合并！ByteCode Alliance |
-| 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | #1574, good first issue |
+| 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | 已修复 window.confirm 问题，等待维护者确认 |
 | 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | 🟢 open | 维护者要求简化为 inline 示例，已修复 |
 | 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | 🟢 open | ⭐51K, CLA ✅ |
 | 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | 🟢 open | |
@@ -82,7 +82,8 @@
 | zerobrew #344 | 测试是真相来源，CHANGELOG 是意图线索 |
 | daily-api #3836 | git config user.name 必须匹配 GitHub 身份，否则 CLA 无法关联 |
 | dali2mqtt #72 | 测试必须验证真实逻辑而非 Mock 行为；generator fixture 耗尽导致级联失败 |
+| vrc-get #2853 | Tauri 环境中 window.confirm 不工作，需使用项目自带的 dialog 系统 |
 
 ---
 
-*最后更新: 2026-05-02 21:45 UTC*
+*最后更新: 2026-05-02 14:50 UTC — vrc-get#2853 fixed, hassette#644 added*
