@@ -4,16 +4,16 @@
 
 ## 统计
 
-- **总计**: 39 个 PR（外部项目）
-- **已合并**: 8 (20.5%)
-- **Open**: 27 (69.2%)
-- **Closed/Rejected**: 4 (10.3%)
+- **总计**: 41 个 PR（外部项目）
+- **已合并**: 8 (19.5%)
+- **Open**: 29 (70.7%)
+- **Closed/Rejected**: 4 (9.8%)
 
 ## 语言分布
 
 | 语言 | 数量 |
 |------|------|
-| Go | 9 |
+| Go | 12 |
 | Rust | 8 |
 | TypeScript | 9 |
 | C | 4 |
@@ -64,6 +64,9 @@
 | 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | 🟢 open | ⭐51K, CLA ✅ |
 | 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | 🟢 open | |
 
+| 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | 🟢 open | good-first-issue #76 |
+| 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | 🟢 open | Oz bot review: replace AIInput with flags::CLI_AGENT_RICH_INPUT_OPEN |
+
 ## 教训汇总
 
 | PR | 教训 |
@@ -83,7 +86,8 @@
 | daily-api #3836 | git config user.name 必须匹配 GitHub 身份，否则 CLA 无法关联 |
 | dali2mqtt #72 | 测试必须验证真实逻辑而非 Mock 行为；generator fixture 耗尽导致级联失败 |
 | vrc-get #2853 | Tauri 环境中 window.confirm 不工作，需使用项目自带的 dialog 系统 |
+| warp #9923 | Oz bot AI review can catch real issues; use specific flags over broad AIInput |
 
 ---
 
-*最后更新: 2026-05-02 14:50 UTC — vrc-get#2853 fixed, hassette#644 added*
+*最后更新: 2026-05-03 01:25 UTC*
