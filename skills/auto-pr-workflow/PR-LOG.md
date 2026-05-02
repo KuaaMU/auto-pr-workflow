@@ -1,13 +1,13 @@
-# PR 提交记录
+1|# PR 提交记录
 
 > auto-pr-workflow 技能的实战记录，每次提交 PR 后更新。
 
 ## 统计
 
 - **总计**: 39 个 PR（外部项目）
-- **已合并**: 7 (17%)
+- **已合并**: 7 (17.9%)
 - **Open**: 27 (69%)
-- **Closed/Rejected**: 5 (12%)
+- **Closed/Rejected**: 5 (13%)
 
 ## 语言分布
 
@@ -85,4 +85,4 @@
 
 ---
 
-*最后更新: 2026-05-02 14:56 UTC (PR状态审计: 39 PRs total, 10 merged 25.6%, cc-connect#828 APPROVED+CLEAN, astro-og-canvas#172 CHANGES_REQUESTED)*
+*最后更新: 2026-05-02 09:03 UTC (PR审计: 39 PRs, 7 merged 17.9%, 27 open, 5 closed)*
