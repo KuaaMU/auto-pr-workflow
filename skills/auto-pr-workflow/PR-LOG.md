@@ -1,13 +1,13 @@
-1|# PR 提交记录
+# PR 提交记录
 
 > auto-pr-workflow 技能的实战记录，每次提交 PR 后更新。
 
 ## 统计
 
 - **总计**: 39 个 PR（外部项目）
-- **已合并**: 7 (17.9%)
-- **Open**: 27 (69%)
-- **Closed/Rejected**: 5 (13%)
+- **已合并**: 9 (23.1%)
+- **Open**: 24 (61.5%)
+- **Closed/Rejected**: 6 (15.4%)
 
 ## 语言分布
 
@@ -34,7 +34,7 @@
 | 8 | pi-mono | TS | [#4015](https://github.com/badlogic/pi-mono/pull/4015) | fix: correct path for ~/.agents/skills | 2026-04 | ❌ closed | auto-close 机制 |
 | 9 | go-basher | Go | [#61](https://github.com/progrium/go-basher/pull/61) | fix: TOCTOU race in bash binary extraction | 2026-04 | ❌ closed | 维护者合并了其他实现 |
 | 10 | codebase-memory-mcp | C | [#306](https://github.com/DeusData/codebase-memory-mcp/pull/306) | fix: add .m extension to EXT_TABLE | 2026-04 | 🟢 open | 首个 C 语言 PR |
-| 11 | openzl | C | [#702](https://github.com/facebook/openzl/pull/702) | fix: use ZL_free for ZL_malloc memory | 2026-04 | ❌ closed | 被关闭，非合并 |
+| 11 | openzl | C | [#702](https://github.com/facebook/openzl/pull/702) | fix: use ZL_free for ZL_malloc memory | 2026-04 | ✅ merged | squash merge, Cyan4973 审查合并 |
 | 12 | tailslayer | C++ | [#19](https://github.com/LaurieWired/tailslayer/pull/19) | fix: mmap failure in hedged_reader | 2026-04-30 | 🟢 open | 2.5K⭐ |
 | 13 | zenc | C | [#417](https://github.com/zenc-lang/zenc/pull/417) | fix: Drop cleanup for unassigned expressions | 2026-04-30 | 🟢 open | 4.2K⭐ 编译器 |
 | 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | 🟢 open | 8.3K⭐ |
@@ -57,7 +57,7 @@
 | 31 | reasonix | TS | [#62](https://github.com/esengine/reasonix/pull/62) | test: add unit tests for clipboard.ts | 2026-05-01 | ✅ merged | 第4个合并！ |
 | 32 | warp | Rust | [#9833](https://github.com/warpdotdev/warp/pull/9833) | feat: add Hermes CLI agent detection | 2026-05-01 | 🟢 open | ⭐51K |
 | 33 | dali2mqtt | Python | [#72](https://github.com/dgomes/dali2mqtt/pull/72) | test: expand test coverage for lamp and devicesnamesconfig | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock |
-| 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | 🟢 open | #64 修复, 真实逻辑测试 |
+| 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock，非真实逻辑 |
 | 35 | wrpc | Go | [#1170](https://github.com/bytecodealliance/wrpc/pull/1170) | docs: add Unix Domain Socket transport example | 2026-05-01 | ✅ merged | 第8个合并！ByteCode Alliance |
 | 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | #1574, good first issue |
 | 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | 🟢 open | 维护者要求简化为 inline 示例，已修复 |
