@@ -34,7 +34,7 @@
 | 8 | pi-mono | TS | [#4015](https://github.com/badlogic/pi-mono/pull/4015) | fix: correct path for ~/.agents/skills | 2026-04 | ❌ closed | auto-close 机制 |
 | 9 | go-basher | Go | [#61](https://github.com/progrium/go-basher/pull/61) | fix: TOCTOU race in bash binary extraction | 2026-04 | ❌ closed | 维护者合并了其他实现 |
 | 10 | codebase-memory-mcp | C | [#306](https://github.com/DeusData/codebase-memory-mcp/pull/306) | fix: add .m extension to EXT_TABLE | 2026-04 | 🟢 open | 首个 C 语言 PR |
-| 11 | openzl | C | [#702](https://github.com/facebook/openzl/pull/702) | fix: use ZL_free for ZL_malloc memory | 2026-04 | ✅ merged | squash merge, Cyan4973 审查合并 |
+| 11 | openzl | C | [#702](https://github.com/facebook/openzl/pull/702) | fix: use ZL_free for ZL_malloc memory | 2026-04 | ✅ merged | squash merged, API shows closed but commit on main |
 | 12 | tailslayer | C++ | [#19](https://github.com/LaurieWired/tailslayer/pull/19) | fix: mmap failure in hedged_reader | 2026-04-30 | 🟢 open | 2.5K⭐ |
 | 13 | zenc | C | [#417](https://github.com/zenc-lang/zenc/pull/417) | fix: Drop cleanup for unassigned expressions | 2026-04-30 | 🟢 open | 4.2K⭐ 编译器 |
 | 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | 🟢 open | 8.3K⭐ |
@@ -85,4 +85,4 @@
 
 ---
 
-*最后更新: 2026-05-02 11:17 UTC
+*最后更新: 2026-05-02 21:45 UTC*
