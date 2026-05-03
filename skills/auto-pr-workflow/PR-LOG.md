@@ -5,8 +5,8 @@
 ## 统计
 
 - **总计**: 49 个 PR（外部项目）
-- **已合并**: 16 (32.7%)
-- **Open**: 27 (55.1%)
+- **已合并**: 17 (34.7%)
+- **Open**: 26 (53.1%)
 - **Closed/Rejected**: 6 (12.2%)
 
 ## 语言分布
@@ -37,7 +37,7 @@
 | 11 | openzl | C | [#702](https://github.com/facebook/openzl/pull/702) | fix: use ZL_free for ZL_malloc memory | 2026-04 | ✅ merged | squash merged, API shows closed but commit on main |
 | 12 | tailslayer | C++ | [#19](https://github.com/LaurieWired/tailslayer/pull/19) | fix: mmap failure in hedged_reader | 2026-04-30 | 🟢 open | 2.5K⭐ |
 | 13 | zenc | C | [#417](https://github.com/zenc-lang/zenc/pull/417) | fix: Drop cleanup for unassigned expressions | 2026-04-30 | 🟢 open | 4.2K⭐ 编译器 |
-| 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | 🟢 open | 8.3K⭐ |
+| 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | ✅ merged | 2026-05-03 合并 |
 | 15 | zerobrew | Rust | [#344](https://github.com/lucasgelfond/zerobrew/pull/344) | fix: skip binary patching when prefix longer | 2026-04-30 | 🟢 open | 7.2K⭐ |
 | 16 | lightning-lm | C++ | [#133](https://github.com/gaoxiang12/lightning-lm/pull/133) | fix: mutex locking for imu_buffer_ | 2026-04-30 | 🟢 open | |
 | 17 | cc-connect | Go | [#828](https://github.com/chenhg5/cc-connect/pull/828) | feat: DingTalk image message handling | 2026-04-30 | 🟢 open | approved but not yet merged |
