@@ -4,10 +4,10 @@
 
 ## 统计
 
-- **总计**: 41 个 PR（外部项目）
-- **已合并**: 9 (22.0%)
-- **Open**: 28 (68.3%)
-- **Closed/Rejected**: 4 (9.8%)
+- **总计**: 49 个 PR（外部项目）
+- **已合并**: 16 (32.7%)
+- **Open**: 28 (57.1%)
+- **Closed/Rejected**: 5 (10.2%)
 
 ## 语言分布
 
@@ -66,6 +66,14 @@
 
 | 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | 🟢 open | good-first-issue #76 |
 | 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | 🟢 open | Oz review addressed: removed EditorView gate, using CLI_AGENT_RICH_INPUT_OPEN only |
+| 42 | claude-agent-sdk | Python | [#245](https://github.com/anthropics/claude-agent-sdk-python/pull/245) | fix: handle Windows command line length limit for --agents | 2025-10-23 | ✅ merged |  |
+| 43 | AIInfra | Python | [#365](https://github.com/Infrasys-AI/AIInfra/pull/365) | update: OpenCompass实践 | 2025-12-22 | ✅ merged |  |
+| 44 | AIInfra | Python | [#327](https://github.com/Infrasys-AI/AIInfra/pull/327) | fix: 修正启动方式，jupyter内一键自动运行 | 2025-11-10 | ✅ merged |  |
+| 45 | AIInfra | Python | [#322](https://github.com/Infrasys-AI/AIInfra/pull/322) | fix: 补充对比验证TP内存优化 | 2025-11-05 | ✅ merged |  |
+| 46 | AIInfra | Python | [#303](https://github.com/Infrasys-AI/AIInfra/pull/303) | fix: Code02Megatron分布式训练代码 | 2025-10-28 | ✅ merged |  |
+| 47 | AIInfra | Python | [#285](https://github.com/Infrasys-AI/AIInfra/pull/285) | fix: Code01ZeRO实验代码修改 | 2025-10-15 | ✅ merged |  |
+| 48 | AIInfra | Python | [#277](https://github.com/Infrasys-AI/AIInfra/pull/277) | fix: Code01ZeRO、Code04Expert | 2025-10-12 | ✅ merged |  |
+| 49 | nautilus_trader | Python | [#3978](https://github.com/nautechsystems/nautilus_trader/pull/3978) | feat: AI native engine | 2026-05-02 | ❌ closed | 维护者关闭 |
 
 ## 教训汇总
 
@@ -90,4 +98,4 @@
 
 ---
 
-*最后更新: 2026-05-03 01:25 UTC*
+*最后更新: 2026-05-03 00:12 UTC*
