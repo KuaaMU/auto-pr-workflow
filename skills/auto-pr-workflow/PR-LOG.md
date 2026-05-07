@@ -4,10 +4,10 @@
 
 ## 统计
 
-- **总计**: 49 个 PR（外部项目）
-- **已合并**: 17 (34.7%)
-- **Open**: 26 (53.1%)
-- **Closed/Rejected**: 6 (12.2%)
+- **总计**: 50 个 PR（外部项目）
+- **已合并**: 18 (36.0%)
+- **Open**: 22 (44.0%)
+- **Closed/Rejected**: 10 (20.0%)
 
 ## 语言分布
 
@@ -40,10 +40,10 @@
 | 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | ✅ merged | 2026-05-03 合并 |
 | 15 | zerobrew | Rust | [#344](https://github.com/lucasgelfond/zerobrew/pull/344) | fix: skip binary patching when prefix longer | 2026-04-30 | 🟢 open | 7.2K⭐ |
 | 16 | lightning-lm | C++ | [#133](https://github.com/gaoxiang12/lightning-lm/pull/133) | fix: mutex locking for imu_buffer_ | 2026-04-30 | 🟢 open | |
-| 17 | cc-connect | Go | [#828](https://github.com/chenhg5/cc-connect/pull/828) | feat: DingTalk image message handling | 2026-04-30 | 🟢 open | approved but not yet merged |
+| 17 | cc-connect | Go | [#828](https://github.com/chenhg5/cc-connect/pull/828) | feat: DingTalk image message handling | 2026-04-30 | ✅ merged | 2026-05-05 合并 |
 | 18 | entireio/cli | Go | [#1086](https://github.com/entireio/cli/pull/1086) | fix: agent-neutral wording in empty-state | 2026-04-30 | ✅ merged | 第6个合并！ |
 | 19 | posthog-js | TS | [#3508](https://github.com/PostHog/posthog-js/pull/3508) | fix: consume fetch response body for CF Workers | 2026-04-30 | 🟢 open | APPROVED, BLOCKED by Vercel (fork expected) |
-| 20 | rikaikun | TS | [#2978](https://github.com/melink14/rikaikun/pull/2978) | fix: don't skip ～ as first character | 2026-04-30 | 🟢 open | CI 全绿 |
+| 20 | rikaikun | TS | [#2978](https://github.com/melink14/rikaikun/pull/2978) | fix: don't skip ～ as first character | 2026-04-30 | 🟢 open | CI 全绿, BEHIND main |
 | 21 | tod | Rust | [#1577](https://github.com/tod-org/tod/pull/1577) | refactor: once_cell → std::sync::LazyLock | 2026-04 | ✅ merged | 首个合并！ |
 | 22 | Choreo | TS | [#1479](https://github.com/SleipnirGroup/Choreo/pull/1479) | docs: add name arg to SmartDashboard.putData | 2026-04-30 | 🟢 open | |
 | 23 | daily-api | TS | [#3836](https://github.com/dailydotdev/daily-api/pull/3836) | ci: add GitHub Actions workflow | 2026-04-30 | 🟢 open | CLA 刚修好 |
@@ -60,11 +60,11 @@
 | 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | 🟢 open | 维护者：测试在测 Mock，非真实逻辑 |
 | 35 | wrpc | Go | [#1170](https://github.com/bytecodealliance/wrpc/pull/1170) | docs: add Unix Domain Socket transport example | 2026-05-01 | ✅ merged | 第8个合并！ByteCode Alliance |
 | 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | 🟢 open | 已修复 window.confirm 问题，等待维护者确认 |
-| 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | 🟢 open | 维护者要求简化为 inline 示例，已修复 |
-| 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | 🟢 open | ⭐51K, CLA ✅ |
+| 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | ❌ closed | 2026-05-04 关闭，维护者不满意 |
+| 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | ❌ closed | 2026-05-06 关闭 |
 | 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | ✅ merged | 第9个合并！ |
 
-| 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | 🟢 open | good-first-issue #76 |
+| 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | ❌ closed | good-first-issue #76 |
 | 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | 🟢 open | Oz review addressed: removed EditorView gate, using CLI_AGENT_RICH_INPUT_OPEN only |
 | 42 | claude-agent-sdk | Python | [#245](https://github.com/anthropics/claude-agent-sdk-python/pull/245) | fix: handle Windows command line length limit for --agents | 2025-10-23 | ✅ merged |  |
 | 43 | AIInfra | Python | [#365](https://github.com/Infrasys-AI/AIInfra/pull/365) | update: OpenCompass实践 | 2025-12-22 | ✅ merged |  |
@@ -74,6 +74,7 @@
 | 47 | AIInfra | Python | [#285](https://github.com/Infrasys-AI/AIInfra/pull/285) | fix: Code01ZeRO实验代码修改 | 2025-10-15 | ✅ merged |  |
 | 48 | AIInfra | Python | [#277](https://github.com/Infrasys-AI/AIInfra/pull/277) | fix: Code01ZeRO、Code04Expert | 2025-10-12 | ✅ merged |  |
 | 49 | nautilus_trader | Python | [#3978](https://github.com/nautechsystems/nautilus_trader/pull/3978) | feat: AI native engine | 2026-05-02 | ❌ closed | 维护者关闭 |
+| 50 | cc-connect | Go | [#852](https://github.com/chenhg5/cc-connect/pull/852) | fix(claudecode): replace dots in project key encoding | 2026-05-05 | ❌ closed | 2026-05-06 关闭，维护者选 #820 |
 
 ## 教训汇总
 
@@ -98,4 +99,4 @@
 
 ---
 
-*最后更新: 2026-05-03 21:21 UTC*
+*最后更新: 2026-05-07
