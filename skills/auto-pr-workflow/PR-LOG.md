@@ -4,10 +4,10 @@
 
 ## 统计
 
-- **总计**: 50 个 PR（外部项目）
-- **已合并**: 21 (42.0%)
-- **Open**: 15 (30.0%)
-- **Closed/Rejected**: 14 (28.0%)
+- **总计**: 52 个 PR（外部项目）
+- **已合并**: 21 (40.4%)
+- **Open**: 17 (32.7%)
+- **Closed/Rejected**: 14 (26.9%)
 
 ## 语言分布
 
@@ -38,12 +38,12 @@
 | 12 | tailslayer | C++ | [#19](https://github.com/LaurieWired/tailslayer/pull/19) | fix: mmap failure in hedged_reader | 2026-04-30 | 🟢 open | 2.5K⭐ |
 | 13 | zenc | C | [#417](https://github.com/zenc-lang/zenc/pull/417) | fix: Drop cleanup for unassigned expressions | 2026-04-30 | 🟢 open | 4.2K⭐ 编译器 |
 | 14 | obscura | Rust | [#73](https://github.com/h4ckf0r0day/obscura/pull/73) | fix: CharacterData DOM API for jQuery | 2026-04-30 | ✅ merged | 2026-05-03 合并 |
-| 15 | zerobrew | Rust | [#344](https://github.com/lucasgelfond/zerobrew/pull/344) | fix: skip binary patching when prefix longer | 2026-04-30 | 🟢 open | 7.2K⭐ |
+| 15 | zerobrew | Rust | [#344](https://github.com/lucasgelfond/zerobrew/pull/344) | fix: skip binary patching when prefix longer | 2026-04-30 | 🟢 open | 7.2K⭐, APPROVED, audit check fails (rand vuln) |
 | 16 | lightning-lm | C++ | [#133](https://github.com/gaoxiang12/lightning-lm/pull/133) | fix: mutex locking for imu_buffer_ | 2026-04-30 | 🟢 open | |
 | 17 | cc-connect | Go | [#828](https://github.com/chenhg5/cc-connect/pull/828) | feat: DingTalk image message handling | 2026-04-30 | ✅ merged | 2026-05-05 合并 |
 | 18 | entireio/cli | Go | [#1086](https://github.com/entireio/cli/pull/1086) | fix: agent-neutral wording in empty-state | 2026-04-30 | ✅ merged | 第6个合并！ |
 | 19 | posthog-js | TS | [#3508](https://github.com/PostHog/posthog-js/pull/3508) | fix: consume fetch response body for CF Workers | 2026-04-30 | ❌ closed | 2026-05-04 关闭 |
-| 20 | rikaikun | TS | [#2978](https://github.com/melink14/rikaikun/pull/2978) | fix: don't skip ～ as first character | 2026-04-30 | 🟢 open | CI 全绿, BEHIND main |
+| 20 | rikaikun | TS | [#2978](https://github.com/melink14/rikaikun/pull/2978) | fix: don't skip ～ as first character | 2026-04-30 | 🟢 open | CHANGES_REQUESTED by maintainer, fixes pushed 2026-05-10 |
 | 21 | tod | Rust | [#1577](https://github.com/tod-org/tod/pull/1577) | refactor: once_cell → std::sync::LazyLock | 2026-04 | ✅ merged | 首个合并！ |
 | 22 | Choreo | TS | [#1479](https://github.com/SleipnirGroup/Choreo/pull/1479) | docs: add name arg to SmartDashboard.putData | 2026-04-30 | 🟢 open | |
 | 23 | daily-api | TS | [#3836](https://github.com/dailydotdev/daily-api/pull/3836) | ci: add GitHub Actions workflow | 2026-04-30 | 🟢 open | CLA 刚修好 |
@@ -76,6 +76,9 @@
 | 49 | nautilus_trader | Python | [#3978](https://github.com/nautechsystems/nautilus_trader/pull/3978) | feat: AI native engine | 2026-05-02 | ❌ closed | 维护者关闭 |
 | 50 | cc-connect | Go | [#852](https://github.com/chenhg5/cc-connect/pull/852) | fix(claudecode): replace dots in project key encoding | 2026-05-05 | ❌ closed | 2026-05-06 关闭，维护者选 #820 |
 
+| 51 | dflash | Python | [#117](https://github.com/z-lab/dflash/pull/117) | feat: add NaN weight detection and input validation | 2026-05-12 | 🟢 open | 650⭐, no CI checks reported |
+| 52 | flashinfer | C++ | [#3300](https://github.com/flashinfer-ai/flashinfer/pull/3300) | fix: use explicit .ptr for tmem_holding_buf scalar access | 2026-05-12 | 🟢 open | 3.5K⭐, CI passing |
+
 ## 教训汇总
 
 | PR | 教训 |
@@ -99,4 +102,4 @@
 
 ---
 
-*最后更新: 2026-05-11
+*最后更新: 2026-05-14
