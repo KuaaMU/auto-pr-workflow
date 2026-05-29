@@ -4,10 +4,10 @@
 
 ## 统计
 
-- **总计**: 56 个 PR（外部项目）
-- **已合并**: 31 (55.4%)
-- **Open**: 16 (28.6%)
-- **Closed/Rejected**: 9 (16.1%)
+- **总计**: 58 个 PR（外部项目）
+- **已合并**: 27 (46.6%)
+- **Open**: 14 (24.1%)
+- **Closed/Rejected**: 17 (29.3%)
 
 ## 语言分布
 
@@ -26,9 +26,9 @@
 |---|------|------|-----|------|------|------|------|
 | 1 | mco | Python | [#83](https://github.com/mco-org/mco/pull/83) | fix: close stdout/stderr pipes in AcpTransport.close() | 2026-04 | ✅ merged | 首个 PR，自审抓 ValueError |
 | 2 | config-rs | Rust | [#751](https://github.com/rust-cli/config-rs/pull/751) | fix: sort MapAccess entries for deterministic iteration | 2026-04 | ❌ closed | 维护者批评：应先讨论再 PR |
-| 3 | consola | TS | [#417](https://github.com/unjs/consola/pull/417) | fix: handle emoji sequences in stringWidth | 2026-04 | 🟢 open | CodeRabbit 暂停 review |
+| 3 | consola | TS | [#417](https://github.com/unjs/consola/pull/417) | fix: handle emoji sequences in stringWidth | 2026-04 | 🟢 open | CodeRabbit confirmed all fixes, ready for maintainer merge |
 | 4 | dingo | Go | [#86](https://github.com/i-love-flamingo/dingo/pull/86) | fix: detect circular singleton dependency | 2026-04 | 🟢 open | 自审抓 3 个 bug |
-| 5 | beelzebub | Go | [#302](https://github.com/beelzebub-labs/beelzebub/pull/302) | fix: context-based stop for data race | 2026-04 | 🟢 open | |
+| 5 | beelzebub | Go | [#302](https://github.com/beelzebub-labs/beelzebub/pull/302) | fix: context-based stop for data race | 2026-04 | ❌ closed | |
 | 6 | cell | Go | [#85](https://github.com/garritfra/cell/pull/85) | fix: escape quotes/backslashes in .cell labels | 2026-04 | ✅ merged | 第5个合并！ |
 | 7 | rtk | Rust | [#1645](https://github.com/rtk-ai/rtk/pull/1645) | fix: remove max_lines cap from helm filter | 2026-04 | 🟢 open | 38K⭐, CLA ✅ |
 | 8 | pi-mono | TS | [#4015](https://github.com/badlogic/pi-mono/pull/4015) | fix: correct path for ~/.agents/skills | 2026-04 | ❌ closed | auto-close 机制 |
@@ -59,29 +59,33 @@
 | 33 | dali2mqtt | Python | [#72](https://github.com/dgomes/dali2mqtt/pull/72) | test: expand test coverage for lamp and devicesnamesconfig | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock |
 | 34 | dali2mqtt | Python | [#73](https://github.com/dgomes/dali2mqtt/pull/73) | fix: handle non-numeric level values in Lamp setter | 2026-05-02 | ❌ closed | 维护者：测试在测 Mock，非真实逻辑 |
 | 35 | wrpc | Go | [#1170](https://github.com/bytecodealliance/wrpc/pull/1170) | docs: add Unix Domain Socket transport example | 2026-05-01 | ✅ merged | 第8个合并！ByteCode Alliance |
-| 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | ✅ merged | 已修复 window.confirm 问题，等待维护者确认 |
+| 36 | vrc-get | Rust | [#2853](https://github.com/vrc-get/vrc-get/pull/2853) | fix: prevent page refresh during backup and migration | 2026-05-02 | ❌ closed | 维护者关闭，window.confirm 问题未解决 |
 | 37 | astro-og-canvas | TS | [#172](https://github.com/delucis/astro-og-canvas/pull/172) | docs: add bgImage usage examples to README | 2026-05-01 | ❌ closed | 2026-05-04 关闭，维护者不满意 |
-| 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | ✅ merged | 2026-05-06 关闭 |
+| 38 | warp | Rust | [#9849](https://github.com/warpdotdev/warp/pull/9849) | fix: Windows context menu path encoding | 2026-05-01 | ❌ closed | 2026-05-06 关闭 |
 | 39 | hassette | Python | [#644](https://github.com/NodeJSmith/hassette/pull/644) | ci: install fd-find for docker requirements tests | 2026-05-02 | ✅ merged | 第9个合并！ |
 
 | 40 | gh-fuda | Go | [#84](https://github.com/tnagatomi/gh-fuda/pull/84) | feat: add --version flag | 2026-05-02 | ✅ merged | good-first-issue #76 |
 | 41 | warp | Rust | [#9923](https://github.com/warpdotdev/warp/pull/9923) | fix: use CLI_AGENT_RICH_INPUT_OPEN flag for Ctrl+G predicate | 2026-05-02 | ✅ merged | Oz review addressed: removed EditorView gate, using CLI_AGENT_RICH_INPUT_OPEN only |
 | 42 | claude-agent-sdk | Python | [#245](https://github.com/anthropics/claude-agent-sdk-python/pull/245) | fix: handle Windows command line length limit for --agents | 2025-10-23 | ✅ merged |  |
+| 57 | claude-agent-sdk | Python | [#219](https://github.com/anthropics/claude-agent-sdk-python/pull/219) | fix: Windows test failures due to path separator | 2025-10-07 | ✅ merged |  |
 | 43 | AIInfra | Python | [#365](https://github.com/Infrasys-AI/AIInfra/pull/365) | update: OpenCompass实践 | 2025-12-22 | ✅ merged |  |
 | 44 | AIInfra | Python | [#327](https://github.com/Infrasys-AI/AIInfra/pull/327) | fix: 修正启动方式，jupyter内一键自动运行 | 2025-11-10 | ✅ merged |  |
 | 45 | AIInfra | Python | [#322](https://github.com/Infrasys-AI/AIInfra/pull/322) | fix: 补充对比验证TP内存优化 | 2025-11-05 | ✅ merged |  |
 | 46 | AIInfra | Python | [#303](https://github.com/Infrasys-AI/AIInfra/pull/303) | fix: Code02Megatron分布式训练代码 | 2025-10-28 | ✅ merged |  |
 | 47 | AIInfra | Python | [#285](https://github.com/Infrasys-AI/AIInfra/pull/285) | fix: Code01ZeRO实验代码修改 | 2025-10-15 | ✅ merged |  |
 | 48 | AIInfra | Python | [#277](https://github.com/Infrasys-AI/AIInfra/pull/277) | fix: Code01ZeRO、Code04Expert | 2025-10-12 | ✅ merged |  |
-| 49 | nautilus_trader | Python | [#3978](https://github.com/nautechsystems/nautilus_trader/pull/3978) | feat: AI native engine | 2026-05-02 | ✅ merged | 维护者关闭 |
-| 50 | cc-connect | Go | [#852](https://github.com/chenhg5/cc-connect/pull/852) | fix(claudecode): replace dots in project key encoding | 2026-05-05 | ✅ merged | 2026-05-06 关闭，维护者选 #820 |
+| 49 | nautilus_trader | Python | [#3978](https://github.com/nautechsystems/nautilus_trader/pull/3978) | feat: AI native engine | 2026-05-02 | ❌ closed | 维护者关闭 |
+| 50 | cc-connect | Go | [#852](https://github.com/chenhg5/cc-connect/pull/852) | fix(claudecode): replace dots in project key encoding | 2026-05-05 | ❌ closed | 2026-05-06 关闭，维护者选 #820 |
 
 | 51 | dflash | Python | [#117](https://github.com/z-lab/dflash/pull/117) | feat: add NaN weight detection and input validation | 2026-05-12 | 🟢 open | 650⭐, no CI checks reported |
 | 53 | DeepSeek-Reasonix | TS | [#911](https://github.com/esengine/DeepSeek-Reasonix/pull/911) | fix: sensitive-path pattern guard for run_command args | 2026-05-15 | ✅ merged | CI passing, maintainer review in progress |
-| 52 | flashinfer | C++ | [#3300](https://github.com/flashinfer-ai/flashinfer/pull/3300) | fix: use explicit .ptr for tmem_holding_buf scalar access | 2026-05-12 | 🟢 open | 3.5K⭐, BLOCKED, REVIEW_REQUIRED |
+| 52 | flashinfer | C++ | [#3300](https://github.com/flashinfer-ai/flashinfer/pull/3300) | fix: use explicit .ptr for tmem_holding_buf scalar access | 2026-05-12 | ❌ closed | 3.5K⭐, BLOCKED, REVIEW_REQUIRED |
 
-| 54 | tokenspeed | TS | [#95](https://github.com/lightseekorg/tokenspeed/pull/95) | docs: add Qwen3 and DeepSeek model recipes | 2026-05-12 | ✅ merged | 2026-05-12 关闭 |
-| 55 | [DeepSeek-Reasonix#62](https://github.com/esengine/DeepSeek-Reasonix/pull/62) | ✅ merged | test: add unit tests for clipboard.ts | 2026-05-01 |
+| 54 | tokenspeed | TS | [#95](https://github.com/lightseekorg/tokenspeed/pull/95) | docs: add Qwen3 and DeepSeek model recipes | 2026-05-12 | ❌ closed | 2026-05-12 关闭 |
+| 55 | DeepSeek-Reasonix | TS | [#62](https://github.com/esengine/DeepSeek-Reasonix/pull/62) | test: add unit tests for clipboard.ts | 2026-05-01 | ✅ merged | |
+| 56 | zero | TS | [#63](https://github.com/vercel-labs/zerolang/pull/63) | test: add conformance coverage for control flow, effects, and type features | 2026-05-18 | ❌ closed | 维护者关闭 |
+
+| 58 | DeepSeek-Reasonix | TS | [#911](https://github.com/esengine/DeepSeek-Reasonix/pull/911) | feat(shell): sensitive-path pattern guard for run_command args | 2026-05-15 | ✅ merged | |
 
 ## 教训汇总
 
@@ -106,6 +110,4 @@
 | DeepSeek-Reasonix #911 | Wire up config options end-to-end: plumbed ≠ wired; use pathMod.sep for cross-platform |
 
 ---
-
-*最后更新: 2026-05-15
-| 56 | zero | TS | [#63](https://github.com/vercel-labs/zero/pull/63) | test: add conformance coverage for control flow, effects, and type features | 2026-05-18 | ✅ merged | squash merged |
+*最后更新: 2026-05-29
