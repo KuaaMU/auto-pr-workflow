@@ -260,41 +260,83 @@ auto-pr-workflow/
 
 ---
 
-## 实战统计（37 个 PR）
+## 实战统计
 
-| 状态 | 数量 | 比例 |
-|------|------|------|
-| ✅ Merged | 8 | 21.6% |
-| 🟢 Open | 23 | 62.2% |
-| ❌ Closed | 6 | 16.2% |
+> **口径声明（重要）**：本仓库的 PR 数字**不能与 AIInfra 课程贡献合并统计**——
+> 两者性质完全不同：AIInfra 是**受聘人工编写**（12 提交/11 合并，2025-09~12），
+> 本节是 **agent 流水线产出**（2026-04~05 自动化窗口）。
 
-### 已合并的 PR
+| 分类 | PR 总数 | 已合并 | 未合并/关闭 | open | 合并率 |
+|---|---|---|---|---|---|
+| **本流水线（外部仓库）** | 66 | 18 | 42 | 6 | 27.3% |
+| 本仓库自提（auto-pr-workflow 等） | 6 | 6 | 0 | 0 | — |
+| AIInfra 课程贡献（人写，**另计**） | 11 | 11 | 0 | 0 | — |
 
-| 项目 | PR | 描述 | 语言 |
-|------|-----|------|------|
-| tod-org/tod | #1577 | once_cell → std::sync::LazyLock | Rust |
-| kontext-security/kontext-cli | #88 | heartbeat exponential backoff | Go |
-| go-openapi/runtime | #422 | literal colons in URL paths | Go |
-| esengine/reasonix | #62 | unit tests for clipboard.ts | TS |
-| garritfra/cell | #85 | escape quotes/backslashes | Go |
-| entireio/cli | #1086 | agent-neutral wording | Go |
-| bytecodealliance/wrpc | #1170 | Unix Domain Socket transport | Rust |
-| facebook/openzl | #702 | ZL_free instead of free | C |
+> 全账号共 83 个 PR，覆盖 20 个仓库（含自有）。
 
-### 语言分布
+#### ① agent 流水线产出的已合并 PR（外部仓库）
 
-| 语言 | 数量 |
-|------|------|
-| Go | 9 |
-| TypeScript | 7 |
-| Rust | 6 |
-| C | 4 |
-| C++ | 2 |
-| Python | 2 |
 
-**详细记录**：[PR-LOG.md](./skills/auto-pr-workflow/PR-LOG.md)　|　**案例库**：[test-records/](./test-records/)
+| 项目 | PR | 描述 | 合并日期 |
+|---|---|---|---|
+| anthropics/claude-agent-sdk-python | #219 | Fix Windows test failures due to path separator issues | 2025-10-07 |
+| anthropics/claude-agent-sdk-python | #245 | handle Windows command line length limit for --agents op | 2025-10-11 |
+| chenhg5/cc-connect | #828 | add DingTalk image message handling | 2026-04-30 |
+| entireio/cli | #1086 | use agent-neutral wording in explain empty-state message | 2026-04-30 |
+| h4ckf0r0day/obscura | #73 | implement CharacterData DOM API for jQuery DataTables co | 2026-04-30 |
+| DeusData/codebase-memory-mcp | #306 | add .m extension to EXT_TABLE for content-based disambig | 2026-04-30 |
+| rtk-ai/rtk | #1645 | remove max_lines cap from helm filter that truncates tem | 2026-04-30 |
+| garritfra/cell | #85 | escape quotes and backslashes in .cell format labels | 2026-04-30 |
+| marco-prontera/vite-plugin-css-injected-by-js | #166 | update outdated GitHub Actions and improve CI reliabilit | 2026-04-30 |
+| tod-org/tod | #1577 | replace once_cell with std::sync::LazyLock | 2026-04-30 |
+| mco-org/mco | #83 | close stdout/stderr pipes in AcpTransport.close() | 2026-04-30 |
+| esengine/DeepSeek-Reasonix | #62 | add unit tests for clipboard.ts | 2026-05-01 |
+| bytecodealliance/wrpc | #1170 | add Unix Domain Socket transport example | 2026-05-01 |
+| warpdotdev/warp | #9833 | add Hermes CLI agent detection and configuration | 2026-05-01 |
+| go-openapi/runtime | #422 | handle literal colons in URL paths for denco router | 2026-05-01 |
+| kontext-security/kontext | #88 | add exponential backoff to sidecar heartbeat loop | 2026-05-01 |
+| NodeJSmith/hassette | #644 | install fd-find so docker requirements tests run in CI | 2026-05-02 |
+| esengine/DeepSeek-Reasonix | #911 | sensitive-path pattern guard for run_command args (#259) | 2026-05-15 |
 
----
+> ⚠️ **`facebook/openzl` #702 是特例**：GitHub API 的 `merged` 字段为 `false`，
+> 但 Meta 通过内部 diff 同步落地（`meta-codesync[bot]` 记录 + 官方 `Merged` 标签），
+> 维护者公开回复 "Good find @KuaaMU !"。**代码确实合入，只是未经 GitHub merge 动作。**
+
+#### ② 自有仓库（6 个）
+
+
+| 项目 | PR | 描述 | 合并日期 |
+|---|---|---|---|
+| KuaaMU/swarmmind | #3 | SwarmMind v1 bootstrap — Zod schemas, LiquidityAgent, Co | 2026-03-16 |
+| KuaaMU/omnihive | #6 | Execution Control Plane - Phase 0-4 Complete | 2026-03-19 |
+| KuaaMU/auto-pr-workflow | #5 | Add skill: auto-pr-workflow | 2026-04-29 |
+| KuaaMU/auto-pr-workflow | #4 | add submit.sh tests | 2026-04-29 |
+| KuaaMU/auto-pr-workflow | #3 | resolve all shellcheck warnings | 2026-04-29 |
+| KuaaMU/auto-pr-workflow | #2 | add checks.sh tests and fix bash syntax validation | 2026-04-29 |
+
+#### ③ AIInfra 课程贡献（11 个，人工编写）
+
+
+| 项目 | PR | 描述 | 合并日期 |
+|---|---|---|---|
+| Infrasys-AI/AIInfra | #175 | 增加Gpipe的小节，调整了小节的顺序，使实验路线更平缓 | 2025-09-11 |
+| Infrasys-AI/AIInfra | #211 | 增加了最终的对比测试。添加显存占用对比 | 2025-09-21 |
+| Infrasys-AI/AIInfra | #233 | 补充更新Code03Pipeline.md文件 | 2025-09-26 |
+| Infrasys-AI/AIInfra | #238 | 4.3.1初试 | 2025-09-28 |
+| Infrasys-AI/AIInfra | #245 | 单GPU模拟测试 | 2025-10-05 |
+| Infrasys-AI/AIInfra | #277 | 修改Code01ZeRO、Code04Expert | 2025-10-12 |
+| Infrasys-AI/AIInfra | #285 | fix/Code01ZeRO:大幅度修改实验代码，添加文本介绍 | 2025-10-14 |
+| Infrasys-AI/AIInfra | #303 | Fix:Code02Megatron,修改分布式训练代码，并验证 | 2025-10-24 |
+| Infrasys-AI/AIInfra | #322 | Fix:补充验对比验证TP内存优化 | 2025-11-05 |
+| Infrasys-AI/AIInfra | #327 | 修正启动方式，可在jupyter内一键自动运行。同步markdown文件。 | 2025-11-07 |
+| Infrasys-AI/AIInfra | #365 | OpenCompass实践 | 2025-12-06 |
+
+#### 实验结论（负结果，如实记录）
+
+- 自动化窗口外部合并率 **27.3%**（18/66），**低于本项目之前的手写期 68%**。
+- 据此于 **2026-08 停止**对陌生仓库的自动化批量投递，
+  改为只对有真实痛点、维护者明确欢迎 PR 的仓库定向提交。
+- 失败模式已沉淀进 `anti-patterns/`，每条附真实仓库与 PR 编号。
 
 ## 关键教训
 
